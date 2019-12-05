@@ -15,20 +15,20 @@ def get_operands(cells, ip, count):
     modes = str(opcode).zfill(count+2)[:-2]
     return tuple(get_operand(cells, modes[-i-1], cells[ip + 1 + i]) for i in range(count))
 
+def make_arith_op(argc, fn):
+    def op(cells, ip):
+        argv = get_operands(cells, ip, argc)
+        cells[cells[ip+argc+1]] = fn(*argv)
+        return ip + argc + 2
+    return op
 
-def add_op(cells, ip):
-    a, b = get_operands(cells, ip, 2)
-    cells[cells[ip + 3]] = a + b
-    return ip + 4
+add_op = make_arith_op(2, lambda a, b: a + b)
+mult_op = make_arith_op(2, lambda a, b: a * b)
 
-def mult_op(cells, ip):
-    a, b = get_operands(cells, ip, 2)
-    cells[cells[ip + 3]] = a * b
-    return ip + 4
+input_op = make_arith_op(0, lambda: int(input("input op:")))
 
-def input_op(cells, ip):
-    cells[cells[ip + 1]] = int(input("input op:"))
-    return ip + 2
+less_than_op = make_arith_op(2, lambda a, b: 1 if a < b else 0)
+equal_to_op = make_arith_op(2, lambda a, b: 1 if a == b else 0)
 
 def output_op(cells, ip):
     result, = get_operands(cells, ip, 1)
@@ -47,22 +47,6 @@ def jump_if_false(cells, ip):
         return target
     return ip + 3
 
-def less_than(cells, ip):
-    a, b = get_operands(cells, ip, 2)
-    if a < b:
-        cells[cells[ip + 3]] = 1
-    else:
-        cells[cells[ip + 3]] = 0
-    return ip + 4
-
-def equal_to(cells, ip):
-    a, b = get_operands(cells, ip, 2)
-    if a == b:
-        cells[cells[ip + 3]] = 1
-    else:
-        cells[cells[ip + 3]] = 0
-    return ip + 4
-
 ops = [
     None,
     add_op,
@@ -71,8 +55,8 @@ ops = [
     output_op,
     jump_if_true,
     jump_if_false,
-    less_than,
-    equal_to
+    less_than_op,
+    equal_to_op
 ]
 
 
