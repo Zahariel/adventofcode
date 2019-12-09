@@ -1,26 +1,50 @@
 
 class IntComp():
     def __init__(self, cells, input_fn=input, output_fn=print):
-        self.cells = cells
+        self.cells = list(cells)
         self.input_fn = input_fn
         self.output_fn = output_fn
         self.ip = 0
+        self.relative_base = 0
+
+        def ensure_cell(idx):
+            if(idx < 0):
+                print("invalid index accessed", idx)
+                exit(1)
+            while(len(self.cells) < idx + 1):
+                self.cells.append(0)
+
+        def get_target(mode, val):
+            if mode == '0':
+                return val
+            elif mode == '2':
+                return self.relative_base + val
+            else:
+                print("unexpected address mode", mode)
+                exit(2)
 
         def get_operand(mode, val):
-            if mode == '0':
-                return self.cells[val]
-            elif mode == '1':
+            if mode == '1':
                 return val
+            else:
+                target = get_target(mode, val)
+                ensure_cell(target)
+                return self.cells[target]
 
-        def get_operands(count):
+        def get_operands(count, output=False):
             opcode = self.cells[self.ip]
-            modes = str(opcode).zfill(count+2)[:-2]
-            return tuple(get_operand(modes[-i-1], self.cells[self.ip + 1 + i]) for i in range(count))
+            modes = str(opcode).zfill(count+3)[:-2]
+            results = tuple(get_operand(modes[-i - 1], self.cells[self.ip + 1 + i]) for i in range(count))
+            if output:
+                return results, get_target(modes[0], self.cells[self.ip + 1 + count])
+            else:
+                return results
 
         def make_arith_op(argc, fn):
             def op():
-                argv = get_operands(argc)
-                self.cells[self.cells[self.ip+argc+1]] = fn(*argv)
+                argv, target = get_operands(argc, output=True)
+                ensure_cell(target)
+                self.cells[target] = fn(*argv)
                 return self.ip + argc + 2
             return op
 
@@ -47,6 +71,12 @@ class IntComp():
                 return target
             return self.ip + 3
 
+        def set_relative_base_op():
+            amt, = get_operands(1)
+            self.relative_base = self.relative_base + amt
+            return self.ip + 2
+
+
         self.ops = [
             None,
             add_op,
@@ -56,7 +86,8 @@ class IntComp():
             jump_if_true,
             jump_if_false,
             less_than_op,
-            equal_to_op
+            equal_to_op,
+            set_relative_base_op
         ]
 
     def run(self):

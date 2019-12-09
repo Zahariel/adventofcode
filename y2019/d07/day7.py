@@ -21,7 +21,7 @@ class Signal():
 def try_settings(settings):
     signal = Signal()
     for i in range(5):
-        comp = IntComp(list(initial_cells), input_fn=InputFunction([settings[i], signal.val]), output_fn=signal)
+        comp = IntComp(initial_cells, input_fn=InputFunction([settings[i], signal.val]), output_fn=signal)
         comp.run()
     return signal.val
 
@@ -47,7 +47,7 @@ def try_feedback(settings):
     message_queues[4].put(0)
     threads = []
     for i in range(5):
-        comp = IntComp(list(initial_cells), input_fn=make_get_message(message_queues[i - 1]),
+        comp = IntComp(initial_cells, input_fn=make_get_message(message_queues[i - 1]),
                        output_fn=make_send_message(message_queues[i]))
         comp_thread = Thread(target=comp)
         threads.append(comp_thread)
