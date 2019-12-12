@@ -1,6 +1,7 @@
 import re
 from math import gcd
 from functools import reduce
+from itertools import combinations
 
 class Moon():
     def __init__(self, line):
@@ -35,11 +36,9 @@ with open("input.txt") as f:
 TIME = 1000
 
 def step(moons):
-    for left in moons:
-        for right in moons:
-            if left == right:
-                continue
-            left.gravity(right)
+    for left, right in combinations(moons, 2):
+        left.gravity(right)
+        right.gravity(left)
     for moon in moons:
         moon.move()
 
