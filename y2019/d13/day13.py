@@ -1,4 +1,4 @@
-from y2019.intcode import run_comp
+from y2019.intcode import run_comp, FrameOutput
 from collections import defaultdict
 
 with open("input.txt") as f:
@@ -18,24 +18,16 @@ class Board():
         self.paddle_x = 0
         self.ball_x = 0
 
-    def draw(self, val):
-        if self.mode == 0:
-            self.x = val
-            self.mode = 1
-        elif self.mode == 1:
-            self.y = val
-            self.mode = 2
-        elif self.mode == 2:
-            if self.x == -1 and self.y == 0:
-                self.score = val
-                self.scores.append(val)
-            else:
-                self.board[self.x, self.y] = val
-                if val == 3:
-                    self.paddle_x = self.x
-                elif val == 4:
-                    self.ball_x = self.x
-            self.mode = 0
+    def frame_draw(self, x, y, val):
+        if x == -1 and y == 0:
+            self.score = val
+            self.scores.append(val)
+        else:
+            self.board[x, y] = val
+            if val == 3:
+                self.paddle_x = x
+            elif val == 4:
+                self.ball_x = x
 
     def draw_board(self):
         print(self.score)
@@ -47,7 +39,7 @@ class Board():
 
 board = Board()
 
-run_comp(initial_cells, output_fn=board.draw)
+run_comp(initial_cells, output_fn=FrameOutput(3, board.frame_draw))
 
 print(sum(1 for thing in board.board.values() if thing == 2))
 board.draw_board()
@@ -70,7 +62,7 @@ def get_input(prompt):
 
 board = Board()
 
-run_comp(initial_cells, input_fn=get_input, output_fn=board.draw)
+run_comp(initial_cells, input_fn=get_input, output_fn=FrameOutput(3,board.frame_draw))
 
 board.draw_board()
 print(board.scores)

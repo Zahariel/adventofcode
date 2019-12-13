@@ -110,3 +110,15 @@ class InputFunction():
     def __call__(self, *args, **kwargs):
         self.idx = self.idx + 1
         return self.list[self.idx - 1]
+
+class FrameOutput():
+    def __init__(self, size, fn):
+        self.size = size
+        self.fn = fn
+        self.outputs = []
+
+    def __call__(self, val):
+        self.outputs.append(val)
+        if len(self.outputs) == self.size:
+            self.fn(*self.outputs)
+            self.outputs = []
