@@ -1,5 +1,38 @@
+def ensure_cell(cells, idx):
+    if idx < 0:
+        print("invalid index accessed", idx)
+        exit(1)
+    while len(cells) < idx + 1:
+        cells.append(0)
 
-class IntComp():
+def get_operand(cells, mode, val, relative_base):
+    if mode == '1':
+        return val
+    else:
+        target = get_target(mode, val, relative_base)
+        ensure_cell(cells, target)
+        return cells[target]
+
+def get_target(mode, val, relative_base):
+    if mode == '0':
+        return val
+    elif mode == '2':
+        return relative_base + val
+    else:
+        print("unexpected address mode", mode)
+        exit(2)
+
+def get_operands(cells, ip, count, relative_base, output=False):
+    opcode = cells[ip]
+    modes = str(opcode).zfill(count+3)[:-2]
+    results = tuple(get_operand(cells, modes[-i - 1], cells[ip + 1 + i], relative_base) for i in range(count))
+    if output:
+        return results, get_target(modes[0], cells[ip + 1 + count], relative_base)
+    else:
+        return results, None
+
+
+class IntComp:
     def __init__(self, cells, input_fn=input, output_fn=print):
         self.cells = list(cells)
         self.input_fn = input_fn
@@ -7,43 +40,10 @@ class IntComp():
         self.ip = 0
         self.relative_base = 0
 
-        def ensure_cell(idx):
-            if(idx < 0):
-                print("invalid index accessed", idx)
-                exit(1)
-            while(len(self.cells) < idx + 1):
-                self.cells.append(0)
-
-        def get_target(mode, val):
-            if mode == '0':
-                return val
-            elif mode == '2':
-                return self.relative_base + val
-            else:
-                print("unexpected address mode", mode)
-                exit(2)
-
-        def get_operand(mode, val):
-            if mode == '1':
-                return val
-            else:
-                target = get_target(mode, val)
-                ensure_cell(target)
-                return self.cells[target]
-
-        def get_operands(count, output=False):
-            opcode = self.cells[self.ip]
-            modes = str(opcode).zfill(count+3)[:-2]
-            results = tuple(get_operand(modes[-i - 1], self.cells[self.ip + 1 + i]) for i in range(count))
-            if output:
-                return results, get_target(modes[0], self.cells[self.ip + 1 + count])
-            else:
-                return results
-
         def make_arith_op(argc, fn):
             def op():
-                argv, target = get_operands(argc, output=True)
-                ensure_cell(target)
+                argv, target = get_operands(self.cells, self.ip, argc, self.relative_base, output=True)
+                ensure_cell(self.cells, target)
                 self.cells[target] = fn(*argv)
                 return self.ip + argc + 2
             return op
@@ -55,24 +55,24 @@ class IntComp():
         equal_to_op = make_arith_op(2, lambda a, b: 1 if a == b else 0)
 
         def output_op():
-            result, = get_operands(1)
+            (result,), _ = get_operands(self.cells, self.ip, 1, self.relative_base)
             output_fn(result)
             return self.ip + 2
 
         def jump_if_true():
-            val, target = get_operands(2)
+            (val, target), _ = get_operands(self.cells, self.ip, 2, self.relative_base)
             if val != 0:
                 return target
             return self.ip + 3
 
         def jump_if_false():
-            val, target = get_operands(2)
+            (val, target), _ = get_operands(self.cells, self.ip, 2, self.relative_base)
             if val == 0:
                 return target
             return self.ip + 3
 
         def set_relative_base_op():
-            amt, = get_operands(1)
+            (amt,), _ = get_operands(self.cells, self.ip, 1, self.relative_base)
             self.relative_base = self.relative_base + amt
             return self.ip + 2
 
@@ -102,7 +102,7 @@ class IntComp():
 def run_comp(cells, input_fn=input, output_fn=print):
     IntComp(cells, input_fn, output_fn).run()
 
-class InputFunction():
+class InputFunction:
     def __init__(self, list):
         self.list = list
         self.idx = 0
@@ -111,7 +111,7 @@ class InputFunction():
         self.idx = self.idx + 1
         return self.list[self.idx - 1]
 
-class FrameOutput():
+class FrameOutput:
     def __init__(self, size, fn):
         self.size = size
         self.fn = fn
@@ -122,3 +122,46 @@ class FrameOutput():
         if len(self.outputs) == self.size:
             self.fn(*self.outputs)
             self.outputs = []
+
+class CoIntComp:
+    def __init__(self, cells):
+        self.cells = list(cells)
+        self.ip = 0
+        self.relative_base = 0
+        self.inputs = []
+
+        def set_relative_base_op(val):
+            self.relative_base = self.relative_base + val
+            return self.ip + 2, None
+
+        self.ops = [
+            None,
+            (lambda a, b: (self.ip + 4, a+b), 2, True),
+            (lambda a, b: (self.ip + 4, a*b), 2, True),
+            (lambda: (self.ip + 2, self.inputs.pop()), 0, True),
+            (None, 1, False), # output is handled special
+            (lambda val, t: (t if val != 0 else self.ip + 3, None), 2, False),
+            (lambda val, t: (t if val == 0 else self.ip + 3, None), 2, False),
+            (lambda a, b: (self.ip + 4, 1 if a < b else 0), 2, True),
+            (lambda a, b: (self.ip + 4, 1 if a == b else 0), 2, True),
+            (set_relative_base_op, 1, False)
+        ]
+
+    def decode(self, instruction):
+        opcode = instruction % 100
+        return self.ops[opcode]
+
+    def run(self, *inputs):
+        self.inputs = self.inputs + list(inputs)
+        while self.cells[self.ip] != 99:
+            instruction = self.cells[self.ip]
+            fn, argc, has_output = self.decode(instruction)
+            argv, output_target = get_operands(self.cells, self.ip, argc, self.relative_base, has_output)
+            if fn is None:
+                self.ip = self.ip + 2
+                return argv[0]
+            else:
+                self.ip, result = fn(*argv)
+                if has_output:
+                    self.cells[output_target] = result
+
