@@ -163,5 +163,6 @@ class CoIntComp:
             else:
                 self.ip, result = fn(*argv)
                 if has_output:
+                    ensure_cell(self.cells, output_target)
                     self.cells[output_target] = result
 
