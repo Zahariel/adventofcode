@@ -138,7 +138,7 @@ class CoIntComp:
             None,
             (lambda a, b: (self.ip + 4, a+b), 2, True),
             (lambda a, b: (self.ip + 4, a*b), 2, True),
-            (lambda: (self.ip + 2, self.inputs.pop()), 0, True),
+            (lambda: (self.ip + 2, self.inputs.pop(0)), 0, True),
             (None, 1, False), # output is handled special
             (lambda val, t: (t if val != 0 else self.ip + 3, None), 2, False),
             (lambda val, t: (t if val == 0 else self.ip + 3, None), 2, False),
