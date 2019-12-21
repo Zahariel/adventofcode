@@ -1,3 +1,5 @@
+import itertools
+
 def ensure_cell(cells, idx):
     if idx < 0:
         print("invalid index accessed", idx)
@@ -166,3 +168,7 @@ class CoIntComp:
                     ensure_cell(self.cells, output_target)
                     self.cells[output_target] = result
 
+class AsciiComp(IntComp):
+    def __init__(self, cells, instructions):
+        inputs = list(itertools.chain(*[[ord(c) for c in line] + [10] for line in instructions]))
+        super().__init__(cells, output_fn=lambda c: print(chr(c), end="") if c < 255 else print(c), input_fn=InputFunction(inputs))
