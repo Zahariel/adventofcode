@@ -125,6 +125,16 @@ class FrameOutput:
             self.fn(*self.outputs)
             self.outputs = []
 
+class FrameInput:
+    def __init__(self, fn):
+        self.fn = fn
+        self.queue = []
+
+    def __call__(self, prompt):
+        if len(self.queue) == 0:
+            self.queue = list(self.fn())
+        return self.queue.pop(0)
+
 class CoIntComp:
     def __init__(self, cells):
         self.cells = list(cells)
