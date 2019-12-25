@@ -182,3 +182,12 @@ class AsciiComp(IntComp):
     def __init__(self, cells, instructions):
         inputs = list(itertools.chain(*[[ord(c) for c in line] + [10] for line in instructions]))
         super().__init__(cells, output_fn=lambda c: print(chr(c), end="") if c < 255 else print(c), input_fn=InputFunction(inputs))
+
+class InteractiveAsciiComp(IntComp):
+    def __init__(self, cells, input_fn=input):
+        def get_input():
+            result = input_fn()
+            return [ord(c) for c in result] + [10]
+
+        super().__init__(cells, output_fn=lambda c: print(chr(c), end="") if c < 255 else print(c), input_fn=FrameInput(get_input))
+
