@@ -19,4 +19,4 @@ groups.append(acc)
 
 print(sum(len(functools.reduce(operator.or_, group)) for group in groups))
 
-print(sum(len(functools.reduce(operator.and_, group, set("qwertyuiopasdfghjklzxcvbnm"))) for group in groups))
+print(sum(len(functools.reduce(operator.and_, group)) for group in groups))
