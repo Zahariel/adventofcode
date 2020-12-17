@@ -14,12 +14,6 @@ class Board:
         self.lower_bounds = [min(val, bound) for val, bound in zip(point, self.lower_bounds)]
         self.upper_bounds = [max(val, bound) for val, bound in zip(point, self.upper_bounds)]
 
-    def remove(self, point):
-        self.cells.discard(point)
-
-    def __getitem__(self, item):
-        return item in self.cells
-
     def calc_neighborhood(self, point):
         return sum(1 for d_point in itertools.product(*(range(v - 1, v + 2) for v in point)) if d_point in self.cells)
 
@@ -34,6 +28,8 @@ class Board:
 
         return new_board
 
+STARTUP_LENGTH = 6
+
 board = Board(3)
 with open("input.txt") as f:
     for y, line in enumerate(f):
@@ -41,9 +37,6 @@ with open("input.txt") as f:
             if cell == '#':
                 board.add((x, y, 0))
 
-print(board.cells)
-
-STARTUP_LENGTH = 6
 for i in range(STARTUP_LENGTH):
     board = board.step()
 
