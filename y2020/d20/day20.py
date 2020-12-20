@@ -37,12 +37,12 @@ class LayoutTile:
         # skip the edges
         d_row += 1
         d_col += 1
-        # rotate to the right orientation
-        for i in range(self.orientation):
-            d_row, d_col = 9 - d_col, d_row
         # reverse if necessary
         if self.rev:
             d_col = 9 - d_col
+        # rotate to the right orientation
+        for i in range(self.orientation):
+            d_row, d_col = d_col, 9 - d_row
         return self.tile.pixels[d_row][d_col]
 
 NORTH = 0
@@ -88,8 +88,8 @@ def attempt_layout(layout, row, col, used):
     # print(f"tried everything for {row} {col}")
     return None
 
-# filename, WIDTH, HEIGHT = ("input.txt", 12, 12)
-filename, WIDTH, HEIGHT = ("test.txt", 3, 3)
+filename, WIDTH, HEIGHT = ("input.txt", 12, 12)
+# filename, WIDTH, HEIGHT = ("test.txt", 3, 3)
 # filename, WIDTH, HEIGHT = ("test2.txt", 3, 2)
 
 with open(filename) as f:
@@ -121,6 +121,8 @@ result = attempt_layout(layout, 0, 0, used)
 if result:
     print("got result")
     print(layout[0][0].tile.tile_num * layout[0][-1].tile.tile_num * layout[-1][0].tile.tile_num * layout[-1][-1].tile.tile_num)
+    for tile_row in layout:
+        print("   ".join(f"{tile.tile.tile_num} {tile.orientation} {tile.rev}" for tile in tile_row))
 else:
     print("failure")
 
@@ -151,7 +153,10 @@ for row in range(HEIGHT * 8):
             print('#', end='')
         else:
             print('.', end='')
+        if col % 8 == 7: print(' ', end="")
     print()
+    if row % 8 == 7: print()
+
 
 
 def convert_to(row, col, orientation, rev, height, width):
@@ -175,6 +180,8 @@ def look_for(needle, needle_height, needle_width):
                 found.append((row, col))
     return found
 
+monsters = dict()
+
 for orientation, rev in ALL_ORIENTATIONS:
     # rotate the monster
     converted_monster = set(convert_to(row, col, orientation, rev, SEA_MONSTER_HEIGHT, SEA_MONSTER_WIDTH) for (row, col) in SEA_MONSTER_PIXELS)
@@ -189,6 +196,7 @@ for orientation, rev in ALL_ORIENTATIONS:
         print(f"{orientation} {rev} found {result}!")
         monster_pixels = set((row + d_row, col + d_col) for (row, col) in result for (d_row, d_col) in converted_monster)
         assert monster_pixels <= final_image
+        monsters[orientation, rev] = monster_pixels
         for row in range(HEIGHT * 8):
             for col in range(WIDTH * 8):
                 if (row, col) in monster_pixels:
@@ -199,5 +207,6 @@ for orientation, rev in ALL_ORIENTATIONS:
                     print('.', end='')
             print()
 
-        print(len(final_image) - len(result) * len(converted_monster))
-        break
+        print(len(final_image - monster_pixels))
+
+print({orientation: len(monsters[orientation]) for orientation in monsters})
