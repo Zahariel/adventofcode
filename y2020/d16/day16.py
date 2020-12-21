@@ -1,5 +1,7 @@
 import re
 
+import chooser
+
 class Rule:
     def __init__(self, name, start1, end1, start2, end2):
         self.name = name
@@ -66,14 +68,7 @@ for ticket in nearby_tickets:
             if rule in possibilities[pos] and not rule.is_in(val):
                 possibilities[pos].remove(rule)
 
-decisions = [None for _ in possibilities]
-while any(val is None for val in decisions):
-    # find something with 1 possibility
-    idx, s = next(filter(lambda p: len(p[1]) == 1, enumerate(possibilities)))
-    val = s.pop()
-    decisions[idx] = val
-    # take that possibility out of everything
-    [poss.discard(val) for poss in possibilities]
+decisions = chooser.choose_list(possibilities)
 
 product = 1
 for val, rule in zip(your_ticket, decisions):
