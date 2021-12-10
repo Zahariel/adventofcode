@@ -17,3 +17,8 @@ target = int(statistics.mean(data))
 print(target)
 print(sum((abs(n - target) * (abs(n - target) + 1)) // 2 for n in data))
 print(sum((abs(n - target - 1) * (abs(n - target - 1) + 1)) // 2 for n in data))
+
+# extra secret bonus prize!
+import y2019.intcode
+
+y2019.intcode.AsciiComp(data, []).run()
