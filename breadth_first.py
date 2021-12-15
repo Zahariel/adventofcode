@@ -19,3 +19,21 @@ def breadth_first(start, neighbors_fn, process_fn, status=False):
         for step, neighbor in neighbors_fn(node):
             heapq.heappush(to_search, (dist + step, neighbor))
     return None
+
+# just a useful helper for constructing orthogonal neighbors in an n-dimensional grid
+def ortho_neighbors(*bounds, cost_fn=(lambda c1,c2:1)):
+    def neighbors(c):
+        nbrs = []
+        for dim in range(len(c)):
+            if c[dim] > bounds[dim][0]:
+                c2 = tuple(c[i] - 1 if i == dim else c[i] for i in range(len(c)))
+                cost = cost_fn(c, c2)
+                if cost is not None: nbrs.append((cost, c2))
+            if c[dim] < bounds[dim][1] - 1:
+                c2 = tuple(c[i] + 1 if i == dim else c[i] for i in range(len(c)))
+                cost = cost_fn(c, c2)
+                if cost is not None: nbrs.append((cost, c2))
+        return nbrs
+
+    return neighbors
+

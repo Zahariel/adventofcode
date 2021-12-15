@@ -9,14 +9,7 @@ with open("input.txt") as f:
 
 TARGET = (len(data[0]) - 1, len(data) - 1)
 
-def neighbors(c):
-    x, y = c
-    nbrs = []
-    if x > 0: nbrs.append((data[y][x-1], (x-1, y)))
-    if x < len(data[y]) - 1: nbrs.append((data[y][x+1], (x+1, y)))
-    if y > 0: nbrs.append((data[y-1][x], (x, y-1)))
-    if y < len(data) - 1: nbrs.append((data[y+1][x], (x, y+1)))
-    return nbrs
+neighbors = breadth_first.ortho_neighbors((0, TARGET[0] + 1), (0, TARGET[1] + 1), cost_fn=lambda _,c: data[c[0]][c[1]])
 
 def visit(dist, c):
     if c == TARGET: return dist
@@ -36,14 +29,7 @@ def get_threat(x, y):
     small_y = y % len(data)
     return (data[small_y][small_x] + big_x + big_y - 1) % 9 + 1
 
-def neighbors2(c):
-    x, y = c
-    nbrs = []
-    if x > 0: nbrs.append((get_threat(x-1, y), (x-1, y)))
-    if x < len(data[0]) * REPEATS - 1: nbrs.append((get_threat(x+1, y), (x+1, y)))
-    if y > 0: nbrs.append((get_threat(x, y-1), (x, y-1)))
-    if y < len(data) * REPEATS - 1: nbrs.append((get_threat(x, y+1), (x, y+1)))
-    return nbrs
+neighbors2 = breadth_first.ortho_neighbors((0, TARGET2[0] + 1), (0, TARGET2[1] + 1), cost_fn=lambda _,c: get_threat(*c))
 
 def visit2(dist, c):
     if c == TARGET2: return dist
