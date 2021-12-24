@@ -1,0 +1,327 @@
+inp w
+mul x 0
+add x z
+mod x 26
+div z 1
+add x 14
+eql x w
+# always false, x = 0
+eql x 0
+# always true, x = 1
+mul y 0
+add y 25
+mul y x
+add y 1
+# y = 26
+mul z y
+mul y 0
+# z = 0, y = 0
+add y w
+add y 7
+# y = input[0] + 7
+mul y x
+add z y
+# z1 = input[0] + 7
+
+
+inp w
+# w = input[1]
+mul x 0
+add x z
+mod x 26
+# x = input[0] + 7
+div z 1
+add x 12
+# x = input[0] + 19
+eql x w
+# always false, x = 0
+eql x 0
+# always true, x = 1
+mul y 0
+add y 25
+mul y x
+add y 1
+# y = 26
+mul z y
+# z = (input[0] + 7) * 26
+mul y 0
+add y w
+add y 4
+mul y x
+# y = input[1] + 4
+add z y
+# z1 = (input[0] + 7) * 26 + input[1] + 4
+
+
+inp w
+# w = input[2]
+mul x 0
+add x z
+mod x 26
+# x = input[1] + 4
+div z 1
+add x 11
+# x = input[1] + 15
+eql x w
+# always false, x = 0
+eql x 0
+# x = 1
+mul y 0
+add y 25
+mul y x
+add y 1
+# y = 26
+mul z y
+# z2 = ((input[0] + 7) * 26 + input[1] + 4) * 26
+mul y 0
+add y w
+add y 8
+mul y x
+add z y
+# z2 = ((input[0] + 7) * 26 + input[1] + 4) * 26 + input[2] + 8
+
+
+inp w
+# w = input[3]
+mul x 0
+add x z
+mod x 26
+# x = input[2] + 8
+div z 26
+# z = z1 = (input[0] + 7) * 26 + input[1] + 4
+add x -4
+# x = input[2] + 4
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 1
+mul y x
+add z y
+# z3 = z1 if we get this right
+
+inp w
+# w = input[4]
+mul x 0
+add x z
+mod x 26
+div z 1
+add x 10
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 5
+mul y x
+add z y
+# z4 = ((input[0] + 7) * 26 + input[1] + 4) * 26 + input[4] + 5
+
+inp w
+# w = input[5]
+mul x 0
+add x z
+mod x 26
+div z 1
+add x 10
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 14
+mul y x
+add z y
+# z5 = (((input[0] + 7) * 26 + input[1] + 4) * 26 + input[4] + 5) * 26 + input[5] + 14
+
+inp w
+# w = input[6]
+mul x 0
+add x z
+mod x 26
+div z 1
+add x 15
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 12
+mul y x
+add z y
+# z6 = ((((i[0] + 7) * 26 + i[1] + 4) * 26 + i[4] + 5) * 26 + i[5] + 14) * 26 + i[6] + 12
+
+
+inp w
+# w = input[7]
+mul x 0
+add x z
+mod x 26
+# x = i[6] + 12
+div z 26
+add x -9
+# x = i[6] + 3
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 10
+mul y x
+add z y
+# z7 = z5 = (((input[0] + 7) * 26 + input[1] + 4) * 26 + input[4] + 5) * 26 + input[5] + 14
+
+inp w
+# w = input[8]
+mul x 0
+add x z
+mod x 26
+div z 26
+add x -9
+# x = i[5] + 5
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 5
+mul y x
+add z y
+# z8 = z4 = ((input[0] + 7) * 26 + input[1] + 4) * 26 + input[4] + 5
+
+inp w
+# w = input[9]
+mul x 0
+add x z
+mod x 26
+div z 1
+add x 12
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 7
+mul y x
+add z y
+# z9 = (((input[0] + 7) * 26 + input[1] + 4) * 26 + input[4] + 5) * 26 + i[9] + 7
+
+inp w
+# w = input[10]
+mul x 0
+add x z
+mod x 26
+div z 26
+add x -15
+# x = i[9] - 8
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 6
+mul y x
+add z y
+# z10 = ((input[0] + 7) * 26 + input[1] + 4) * 26 + input[4] + 5
+
+inp w
+# w = input[11]
+mul x 0
+add x z
+mod x 26
+div z 26
+add x -7
+# x = i[4] - 2
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 8
+mul y x
+add z y
+# z11 = (input[0] + 7) * 26 + input[1] + 4
+
+inp w
+# w = input[12]
+mul x 0
+add x z
+mod x 26
+div z 26
+add x -10
+# x = i[1] - 6
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 4
+mul y x
+add z y
+# z12 = input[0] + 7
+
+inp w
+# w = input[13]
+mul x 0
+add x z
+mod x 26
+div z 26
+add x 0
+# x = i[0] + 7
+eql x w
+eql x 0
+# x = 0 if w[13] == z12 % 26
+mul y 0
+add y 25
+mul y x
+add y 1
+# y = 1 if w[13] == z12 % 26 else 26
+mul z y
+# z13 = z12 // 26 if w[13] == z12 % 26 else z12
+mul y 0
+add y w
+add y 6
+# y = w[13] + 6
+mul y x
+add z y
