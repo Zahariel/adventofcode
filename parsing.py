@@ -15,3 +15,6 @@ def split_on_blank(lines:typing.Iterable[str], line_parser:typing.Optional[typin
             group.append(line_parser(line))
     yield group
 
+def chunks(things, chunksize):
+    for i in range(0, len(things), chunksize):
+        yield things[i:i+chunksize]
