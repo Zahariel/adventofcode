@@ -14,15 +14,15 @@ print(groups)
 # part 1
 def compare(l, r):
     if isinstance(l, int) and isinstance(r, int):
-        if l < r: return True
-        if l > r: return False
-        return None
+        if l < r: return -1
+        if l > r: return 1
+        return 0
     if isinstance(l, list) and isinstance(r, list):
-        if len(l) == 0 and len(r) == 0: return None
-        if len(l) == 0: return True
-        if len(r) == 0: return False
+        if len(l) == 0 and len(r) == 0: return 0
+        if len(l) == 0: return -1
+        if len(r) == 0: return 1
         subresult = compare(l[0], r[0])
-        if subresult is not None:
+        if subresult != 0:
             return subresult
         return compare(l[1:], r[1:])
     if isinstance(l, int):
@@ -31,7 +31,7 @@ def compare(l, r):
 
 acc = 0
 for i, (l, r) in enumerate(groups):
-    if compare(l, r):
+    if compare(l, r) < 0:
         print(l, "<", r)
         acc += i + 1
     else:
@@ -45,13 +45,7 @@ packets = [packet for group in groups for packet in group]
 packets.append([[2]])
 packets.append([[6]])
 
-def cmp(l, r):
-    result = compare(l, r)
-    if result: return -1
-    if result is None: return 0
-    return 1
-
-sorted_packets = sorted(packets, key=functools.cmp_to_key(cmp))
+sorted_packets = sorted(packets, key=functools.cmp_to_key(compare))
 
 print(sorted_packets)
 
