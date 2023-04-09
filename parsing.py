@@ -1,8 +1,9 @@
-import typing
+from typing import TypeVar, Optional, Callable
+from collections.abc import Iterable, Generator, Sequence
 
-T = typing.TypeVar('T')
+T = TypeVar('T')
 
-def split_on_blank(lines:typing.Iterable[str], line_parser:typing.Optional[typing.Callable[[str],T]]=None) -> typing.Generator[typing.List[T], None, None]:
+def split_on_blank(lines:Iterable[str], line_parser: Optional[Callable[[str],T]]=None) -> Generator[list[T], None, None]:
     if line_parser is None:
         line_parser = lambda x:x
     group = []
@@ -15,6 +16,6 @@ def split_on_blank(lines:typing.Iterable[str], line_parser:typing.Optional[typin
             group.append(line_parser(line))
     yield group
 
-def chunks(things, chunksize):
+def chunks(things:Sequence[T], chunksize:int) -> Generator[Sequence[T], None, None]:
     for i in range(0, len(things), chunksize):
         yield things[i:i+chunksize]
