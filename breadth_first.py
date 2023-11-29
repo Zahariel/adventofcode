@@ -1,6 +1,6 @@
 import heapq
 from collections.abc import Iterable, Sequence
-from typing import Optional, TypeVar, Callable
+from typing import Callable, NamedTuple, Optional, TypeVar
 
 STATE = TypeVar("STATE")
 RESULT = TypeVar("RESULT")
@@ -9,24 +9,33 @@ def breadth_first(start:STATE, neighbors_fn:Callable[[STATE], Iterable[tuple[int
     return a_star(start, neighbors_fn, process_fn, lambda _: 0, status)
 
 
+class Node[STATE](NamedTuple):
+    est: int
+    dist: int
+    state: STATE
+
+    def __lt__(self, other):
+        return (self.est, self.dist) < (other.est, other.dist)
+
+
 def a_star(start:STATE, neighbors_fn:Callable[[STATE], Iterable[tuple[int, STATE]]],  process_fn:Callable[[int, STATE], Optional[RESULT]], estimator_fn:Callable[[STATE], int], status:bool=False) -> Optional[RESULT]:
-    to_search = [(estimator_fn(start), 0, start)]
+    to_search = [Node(estimator_fn(start), 0, start)]
     heapq.heapify(to_search)
     seen = set()
     current_est = 0
     while len(to_search) > 0:
-        est, dist, node = heapq.heappop(to_search)
+        est, dist, state = heapq.heappop(to_search)
         if status and est > current_est:
             print(dist, est)
             current_est = est
-        if node in seen:
+        if state in seen:
             continue
-        seen.add(node)
-        result = process_fn(dist, node)
+        seen.add(state)
+        result = process_fn(dist, state)
         if result is not None:
             return result
-        for step, neighbor in neighbors_fn(node):
-            heapq.heappush(to_search, (dist + step + estimator_fn(neighbor), dist + step, neighbor))
+        for step, neighbor in neighbors_fn(state):
+            heapq.heappush(to_search, Node(dist + step + estimator_fn(neighbor), dist + step, neighbor))
     return None
 
 
