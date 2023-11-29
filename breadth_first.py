@@ -6,15 +6,19 @@ STATE = TypeVar("STATE")
 RESULT = TypeVar("RESULT")
 
 def breadth_first(start:STATE, neighbors_fn:Callable[[STATE], Iterable[tuple[int, STATE]]], process_fn:Callable[[int, STATE], Optional[RESULT]], status:bool=False) -> Optional[RESULT]:
-    to_search = [(0, start)]
+    return a_star(start, neighbors_fn, process_fn, lambda _: 0, status)
+
+
+def a_star(start:STATE, neighbors_fn:Callable[[STATE], Iterable[tuple[int, STATE]]],  process_fn:Callable[[int, STATE], Optional[RESULT]], estimator_fn:Callable[[STATE], int], status:bool=False) -> Optional[RESULT]:
+    to_search = [(estimator_fn(start), 0, start)]
     heapq.heapify(to_search)
     seen = set()
-    current_dist = 0
+    current_est = 0
     while len(to_search) > 0:
-        dist, node = heapq.heappop(to_search)
-        if status and dist > current_dist:
-            print(dist)
-            current_dist = dist
+        est, dist, node = heapq.heappop(to_search)
+        if status and est > current_est:
+            print(dist, est)
+            current_est = est
         if node in seen:
             continue
         seen.add(node)
@@ -22,8 +26,9 @@ def breadth_first(start:STATE, neighbors_fn:Callable[[STATE], Iterable[tuple[int
         if result is not None:
             return result
         for step, neighbor in neighbors_fn(node):
-            heapq.heappush(to_search, (dist + step, neighbor))
+            heapq.heappush(to_search, (dist + step + estimator_fn(neighbor), dist + step, neighbor))
     return None
+
 
 COORD = TypeVar("COORD", bound=Sequence[int])
 # just a useful helper for constructing orthogonal neighbors in an n-dimensional grid
