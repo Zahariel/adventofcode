@@ -16,11 +16,7 @@ MAXIMA = {
 }
 
 def check_game(game):
-    for draw in game:
-        for amt, color in draw:
-            if int(amt) > MAXIMA[color]:
-                return False
-    return True
+    return all(amt <= MAXIMA[color] for draw in game for amt, color in draw)
 
 print(sum(n+1 for n, game in enumerate(lines) if check_game(game)))
 
