@@ -2,14 +2,16 @@ from collections import defaultdict
 
 from parsy import regex, seq, string, whitespace
 
+from parsing import number
+
 def parse(line):
     color = seq(
-        regex(r"\d+").map(int) << whitespace,
+        number << whitespace,
         regex(r"red|green|blue")
     ).map(tuple)
 
     parser = seq(
-        string("Game ") >> regex(r"\d+").map(int) << string(": "),
+        string("Game ") >> number << string(": "),
         color.sep_by(string(", ")).sep_by(string("; "))
     ).map(tuple)
     return parser.parse(line)

@@ -1,5 +1,7 @@
-from typing import TypeVar, Optional, Callable
-from collections.abc import Iterable, Generator, Sequence
+from collections.abc import Generator, Iterable, Sequence
+from typing import Callable, Optional, TypeVar
+
+import parsy
 
 T = TypeVar('T')
 
@@ -19,3 +21,6 @@ def split_on_blank(lines:Iterable[str], line_parser: Optional[Callable[[str],T]]
 def chunks(things:Sequence[T], chunksize:int) -> Generator[Sequence[T], None, None]:
     for i in range(0, len(things), chunksize):
         yield things[i:i+chunksize]
+
+
+number = parsy.regex(r"\d+").map(int)
