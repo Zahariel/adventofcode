@@ -21,3 +21,7 @@
 
 # IntelliJ
 out/
+
+# AoC input files
+**/input.txt
+**/test.txt
