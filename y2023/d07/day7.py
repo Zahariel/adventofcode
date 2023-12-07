@@ -13,7 +13,7 @@ RANKS = {
 }
 
 def translate_cards(hand):
-    return [RANKS[card] if card in RANKS else int(card) for card in hand]
+    return [RANKS.get(card, int(card)) for card in hand]
 
 def parse(line):
     parser = seq(
@@ -29,6 +29,9 @@ with open("input.txt") as file:
 def rank_hand(hand):
     counter = Counter(hand)
     frequencies = list(sorted(counter.values()))
+    return rank_frequencies(frequencies)
+
+def rank_frequencies(frequencies):
     if frequencies == [5]:
         # five of a kind
         return 7
@@ -58,34 +61,16 @@ print(sum((i+1)*bid for i, (_, bid) in enumerate(sorted_hands)))
 # part 2
 
 wild_hands = [([1 if card == 11 else card for card in hand], bid) for hand, bid in lines]
+
 def rank_hand_jokers(hand:list[int]):
     counter = Counter(hand)
     jokers = counter[1] or 0
-    if jokers == 0:
-        return rank_hand(hand)
     del counter[1]
     frequencies = list(sorted(counter.values()))
-    if jokers == 1:
-        if frequencies == [4]:
-            return 7
-        if frequencies == [1, 3]:
-            return 6
-        if frequencies == [2, 2]:
-            return 5
-        if frequencies == [1, 1, 2]:
-            return 4
-        return 2
-    if jokers == 2:
-        if frequencies == [3]:
-            return 7
-        if frequencies == [1, 2]:
-            return 6
-        return 4
-    if jokers == 3:
-        if frequencies == [2]:
-            return 7
-        return 6
-    return 7
+    if not frequencies: return 7
+
+    frequencies[-1] += jokers
+    return rank_frequencies(frequencies)
 
 sorted_hands_jokers = sorted(wild_hands, key=lambda h: (rank_hand_jokers(h[0]), *h[0]))
 print(sum((i+1) * bid for (i, (_, bid)) in enumerate(sorted_hands_jokers)))
