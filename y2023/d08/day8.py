@@ -59,4 +59,5 @@ def find_loop(start, target_fn):
 cycles = [find_loop(start, lambda n: n[-1] == 'Z') for start in starts]
 
 answer, modulus = chinese_remainder(cycles)
-print((answer - 1) % modulus + 1)
+required_minimum = max(goal for goal, _ in cycles)
+print((answer - required_minimum) % modulus + required_minimum)
