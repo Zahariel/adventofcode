@@ -23,4 +23,4 @@ def chunks(things:Sequence[T], chunksize:int) -> Generator[Sequence[T], None, No
         yield things[i:i+chunksize]
 
 
-number = parsy.regex(r"\d+").map(int)
+number = parsy.regex(r"-?\d+").map(int)
