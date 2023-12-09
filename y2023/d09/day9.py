@@ -1,3 +1,5 @@
+from functools import reduce
+
 from parsy import whitespace
 
 from parsing import number
@@ -13,18 +15,9 @@ with open("input.txt") as file:
 def extrapolate(history):
     diffs = [history[i+1]-history[i] for i in range(len(history) - 1)]
     if set(diffs) == {0}:
-        return history[-1]
-    next_diff = extrapolate(diffs)
-    return history[-1] + next_diff
+        return history[0], history[-1]
+    prev_diff, next_diff = extrapolate(diffs)
+    return history[0] - prev_diff, history[-1] + next_diff
 
-print(sum(extrapolate(history) for history in lines))
+print(reduce(lambda l, r: (l[0] + r[0], l[1] + r[1]), (extrapolate(history) for history in lines)))
 
-
-def reverse_extrapolate(history):
-    diffs = [history[i+1]-history[i] for i in range(len(history) - 1)]
-    if set(diffs) == {0}:
-        return history[0]
-    prev_diff = reverse_extrapolate(diffs)
-    return history[0] - prev_diff
-
-print(sum(reverse_extrapolate(history) for history in lines))
