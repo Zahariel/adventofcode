@@ -14,7 +14,7 @@ with open("input.txt") as file:
 
 def extrapolate(history):
     diffs = [history[i+1]-history[i] for i in range(len(history) - 1)]
-    if set(diffs) == {0}:
+    if all(diff == 0 for diff in diffs):
         return history[0], history[-1]
     prev_diff, next_diff = extrapolate(diffs)
     return history[0] - prev_diff, history[-1] + next_diff
