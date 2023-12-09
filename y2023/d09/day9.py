@@ -1,4 +1,5 @@
-from functools import reduce
+import operator
+from functools import partial, reduce
 
 from parsy import whitespace
 
@@ -19,5 +20,8 @@ def extrapolate(history):
     prev_diff, next_diff = extrapolate(diffs)
     return history[0] - prev_diff, history[-1] + next_diff
 
-print(reduce(lambda l, r: (l[0] + r[0], l[1] + r[1]), (extrapolate(history) for history in lines)))
-
+# note to readers: partial(map, operator.add) means lambda l, r: (l[0] + r[0], l[1] + r[1], ....)
+# although in this case they're only two elements long
+# PyTypeChecker doesn't understand partial correctly
+# noinspection PyTypeChecker
+print(tuple(reduce(partial(map, operator.add), (extrapolate(history) for history in lines))))
