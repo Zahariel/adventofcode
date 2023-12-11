@@ -61,14 +61,21 @@ print(len(path) // 2)
 
 
 # part 2
-path = set(path)
+pathset = set(path)
 area = 0
 for r, line in enumerate(lines):
     inside = set()
     for c, cell in enumerate(line):
-        if (r, c) in path:
+        if (r, c) in pathset:
             inside = inside ^ cell
         elif inside >= {NORTH, SOUTH}:
             area += 1
 print(area)
+
+
+# part 2, an alternate solution based on Pick's theorem
+def edge_area(r1, c1, r2, c2):
+    return (r1 * c2 - r2 * c1) / 2
+true_area = int(sum(edge_area(*path[i-1], *path[i]) for i in range(len(path))))
+print(true_area - len(path) // 2 + 1)
 
