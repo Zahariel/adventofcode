@@ -13,7 +13,6 @@ def parse(line):
 with open("input.txt") as file:
     lines = [parse(line.rstrip()) for line in file]
 
-print(lines)
 
 @cache
 def count_ways_inner(original, i, target, j):
