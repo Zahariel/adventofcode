@@ -1,10 +1,12 @@
+from functools import cache
+
 from parsy import regex, seq, string, whitespace
 
 from parsing import number
 
 def parse(line):
-    springs = regex(r"[#.?]").many()
-    counts = number.sep_by(string(","))
+    springs = regex(r"[#.?]").many().map(tuple)
+    counts = number.sep_by(string(",")).map(tuple)
     parser = seq(springs << whitespace, counts).map(tuple)
     return parser.parse(line)
 
@@ -13,10 +15,8 @@ with open("input.txt") as file:
 
 print(lines)
 
-MEMO = dict()
+@cache
 def count_ways_inner(original, i, target, j):
-    if (i, j) in MEMO:
-        return MEMO[i, j]
     if j == len(target):
         return 1 if not(any(cell == '#' for cell in original[i:])) else 0
     if sum(n + 1 for n in target[j:]) > len(original) - i + 1:
@@ -35,14 +35,13 @@ def count_ways_inner(original, i, target, j):
             # known-broken spring on the end
             continue
         acc += count_ways_inner(original, start + need_to_place + 1, target, j + 1)
-    MEMO[i, j] = acc
     return acc
 
 def count_ways(original, i, target, j):
-    MEMO.clear()
+    count_ways_inner.cache_clear()
     return count_ways_inner(original, i, target, j)
 
 print(sum(count_ways(springs, 0, target, 0) for (springs, target) in lines))
 
-print(sum(count_ways(((springs + ['?']) * 5)[:-1], 0, target * 5, 0) for springs, target in lines))
+print(sum(count_ways(((springs + ('?',)) * 5)[:-1], 0, target * 5, 0) for springs, target in lines))
 
