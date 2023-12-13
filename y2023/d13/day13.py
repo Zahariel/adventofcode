@@ -32,10 +32,10 @@ def find_smudge(pattern):
     for r in range(len(pattern)):
         for c in range(len(pattern[r])):
             pattern[r][c] = not pattern[r][c]
-            new_mirror = find_mirrors(pattern)
+            new_mirrors = find_mirrors(pattern)
             pattern[r][c] = not pattern[r][c]
-            if new_mirror != (set(), set()) and new_mirror != original:
-                return new_mirror[0] - original[0], new_mirror[1] - original[1]
+            if new_mirrors != (set(), set()) and new_mirrors != original:
+                return new_mirrors[0] - original[0], new_mirrors[1] - original[1]
 
 
 new_mirrors = [find_smudge(pattern) for pattern in patterns]
