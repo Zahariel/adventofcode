@@ -23,7 +23,7 @@ def find_mirrors(pattern):
     return look_for_horiz(pattern), look_for_horiz(transpose(pattern))
 
 mirrors = [find_mirrors(pattern) for pattern in patterns]
-print(sum(sum(h * 100 for h in hs) + sum(vs) for hs, vs in mirrors))
+print(sum(sum(hs) * 100 + sum(vs) for hs, vs in mirrors))
 
 
 def find_smudge(pattern):
@@ -39,4 +39,4 @@ def find_smudge(pattern):
 
 
 new_mirrors = [find_smudge(pattern) for pattern in patterns]
-print(sum(sum(h * 100 for h in hs) + sum(vs) for hs, vs in new_mirrors))
+print(sum(sum(hs) * 100 + sum(vs) for hs, vs in new_mirrors))
