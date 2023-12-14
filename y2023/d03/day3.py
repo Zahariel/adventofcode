@@ -1,17 +1,16 @@
+from utils import in_bounds
+
 def parse(line):
     return [c for c in line]
 
 with open("input.txt") as file:
     lines: list[list[str]] = [parse(line.rstrip()) for line in file]
 
-def in_bounds(r, c):
-    return 0 <= r < len(lines) and 0 <= c < len(lines[r])
-
 def is_symbol(r, c):
-    return in_bounds(r, c) and lines[r][c] != '.' and not lines[r][c].isdigit()
+    return in_bounds(lines, r, c) and lines[r][c] != '.' and not lines[r][c].isdigit()
 
 def is_digit(r, c):
-    return in_bounds(r, c) and lines[r][c].isdigit()
+    return in_bounds(lines, r, c) and lines[r][c].isdigit()
 
 def adj_symbol(r, c):
     return any(is_symbol(r2, c2) for r2 in [r-1, r, r+1] for c2 in [c-1, c, c+1])

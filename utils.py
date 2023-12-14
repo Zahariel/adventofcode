@@ -12,3 +12,5 @@ def chinese_remainder(equations):
 
     return sum(residue * inv * (lcm // modulus) for (residue, modulus), inv in zip(equations, inverses)) % lcm, lcm
 
+def in_bounds(grid, r, c):
+    return 0 <= r < len(grid) and 0 <= c < len(grid[r])
