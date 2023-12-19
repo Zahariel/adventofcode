@@ -34,12 +34,12 @@ def parse_part(line):
 
 OPS = {
     '<': operator.lt,
-    '>': operator.gt,
+    '>=': operator.ge,
 }
 
 class Workflow:
     def __init__(self, rules, final):
-        self.rules = rules
+        self.rules = [(v, op, t, next) if op == '<' else (v, '>=', t+1, next) for (v, op, t, next) in rules]
         self.final = final
 
     def process_part(self, part):
@@ -51,16 +51,16 @@ class Workflow:
     def refine_proto(self, proto:dict[str, P.Interval]):
         result:dict[str, list[dict[str, P.Interval]]] = defaultdict(list)
         for value, op, threshold, target in self.rules:
-            processed, remaining = dict(proto), dict(proto)
+            lo, hi = dict(proto), dict(proto)
+            lo[value] &= P.closedopen(-P.inf, threshold)
+            hi[value] -= P.closedopen(-P.inf, threshold)
             if op == '<':
-                processed[value] &= P.closedopen(-P.inf, threshold)
-                remaining[value] -= P.closedopen(-P.inf, threshold)
+                result[target].append(lo)
+                proto = hi
             else:
-                processed[value] &= P.closedopen(threshold+1, P.inf)
-                remaining[value] -= P.closedopen(threshold+1, P.inf)
+                proto = lo
+                result[target].append(hi)
 
-            result[target].append(processed)
-            proto = remaining
         result[self.final].append(proto)
 
         # remove any refinement of 0 size
