@@ -23,5 +23,5 @@
 out/
 
 # AoC input files
-**/input.txt
-**/test.txt
+**/input*.txt
+**/test*.txt
