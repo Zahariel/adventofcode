@@ -111,7 +111,7 @@ def one_step(pair):
         else:
             return None, pair
 
-def reduce(pair):
+def process(pair):
     action = "start"
     # print(pair)
     while action is not None:
@@ -124,7 +124,7 @@ def reduce(pair):
 current = data[0].clone()
 for pair in data[1:]:
     current = Pair(current, pair.clone())
-    current = reduce(current)
+    current = process(current)
     # print(current)
 
 print(current)
@@ -137,7 +137,7 @@ bigl, bigr = None, None
 for left in data:
     for right in data:
         if left is right: continue
-        result = reduce(Pair(left.clone(), right.clone())).magnitude()
+        result = process(Pair(left.clone(), right.clone())).magnitude()
         if result > largest:
             largest = result
             bigl = left
