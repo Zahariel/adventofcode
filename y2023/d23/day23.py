@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import cache
 
 from utils import coord_add, in_bounds
 
@@ -78,17 +79,17 @@ while len(stack) > 0:
             # start new paths
             stack.extend((nbr, 1, here, here) for nbr in nbrs)
 
-longest = 0
 
-def exhaustive_search(node, dist, visited):
-    global longest
+@cache
+def exhaustive_search(node, visited):
     if node == end:
-        if dist > longest:
-            longest = dist
-            return
-    new_visited = visited | {node}
+        return 0
+    longest = 0
+    new_visited = frozenset(visited | {node})
     for next in (path_neighbors[node].keys() - visited):
-        exhaustive_search(next, dist + path_neighbors[node][next], new_visited)
+        result = exhaustive_search(next, new_visited) + path_neighbors[node][next]
+        if result > longest:
+            longest = result
+    return longest
 
-exhaustive_search(start, 0, set())
-print(longest)
+print(exhaustive_search(start, frozenset()))
