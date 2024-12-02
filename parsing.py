@@ -18,6 +18,7 @@ def split_on_blank(lines:Iterable[str], line_parser: Optional[Callable[[str],T]]
             group.append(line_parser(line))
     yield group
 
+# superseded by itertools.batched() in 3.12
 def chunks(things:Sequence[T], chunksize:int) -> Generator[Sequence[T], None, None]:
     for i in range(0, len(things), chunksize):
         yield things[i:i+chunksize]
