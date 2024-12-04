@@ -20,6 +20,26 @@ def in_bounds(grid, r, c):
 def coord_add(coords1, coords2):
     return tuple(map(operator.add, coords1, coords2))
 
+# note: this is an infinite ray, hope you know what you're doing
+def coord_vector(start, dir):
+    while True:
+        yield start
+        start = coord_add(start, dir)
+
+ORTHO_DIRS = [
+    (0, 1),
+    (1, 0),
+    (0, -1),
+    (-1, 0),
+]
+
+DIAG_DIRS = [
+    (1, 1),
+    (-1, 1),
+    (-1, -1),
+    (1, -1),
+]
+
 
 class Coord3D(NamedTuple):
     x: int
