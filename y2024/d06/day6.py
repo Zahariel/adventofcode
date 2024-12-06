@@ -16,7 +16,7 @@ def find_guard():
 
 guard_start = find_guard()
 
-def walk_around():
+def walk_around() -> tuple[bool, set[tuple[int, int]]]:
     guard = guard_start
 
     # heading north
