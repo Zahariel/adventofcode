@@ -1,3 +1,5 @@
+import operator
+
 from parsy import seq, string, whitespace
 
 from parsing import number
@@ -11,8 +13,8 @@ with open("input.txt") as f:
     lines = [parse(line.rstrip()) for line in f]
 
 ops = [
-    lambda l,r: l*r,
-    lambda l,r: l+r,
+    operator.mul,
+    operator.add,
 ]
 
 def test_helper(objective, operands, acc, operations):
