@@ -1,6 +1,6 @@
-from collections import defaultdict
+from collections import Counter
 
-from breadth_first import ortho_neighbors, breadth_first
+from breadth_first import ortho_neighbors, breadth_first, breadth_first_multiple_starts
 
 
 def parse(line):
@@ -35,8 +35,7 @@ print(sum(score(head) for head in trailheads))
 # part 2
 
 def rating(head):
-    paths = defaultdict(int)
-    paths[head] = 1
+    paths = Counter([head])
     total = 0
     def neighbors(point):
         for cost, nbr in RAW_NEIGHBORS(point):
@@ -51,3 +50,19 @@ def rating(head):
     return total
 
 print(sum(rating(head) for head in trailheads))
+
+# part 2 with multiple starts
+paths = Counter(trailheads)
+total = 0
+def neighbors(point):
+    for cost, nbr in RAW_NEIGHBORS(point):
+        if grid[nbr] == grid[point] + 1:
+            paths[nbr] += paths[point]
+            yield cost, nbr
+def process(_, point):
+    global total
+    if grid[point] == 9:
+        total += paths[point]
+breadth_first_multiple_starts(trailheads, neighbors_fn=neighbors, process_fn=process)
+print(total)
+
