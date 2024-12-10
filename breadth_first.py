@@ -5,7 +5,12 @@ from typing import Callable, NamedTuple, Optional, TypeVar
 STATE = TypeVar("STATE")
 RESULT = TypeVar("RESULT")
 
-def breadth_first(start:STATE, neighbors_fn:Callable[[STATE], Iterable[tuple[int, STATE]]], process_fn:Callable[[int, STATE], Optional[RESULT]], status:bool=False) -> Optional[RESULT]:
+def breadth_first(
+        start:STATE,
+        neighbors_fn:Callable[[STATE], Iterable[tuple[int, STATE]]],
+        process_fn:Callable[[int, STATE], Optional[RESULT]] = (lambda _, __: None),
+        status:bool=False
+) -> Optional[RESULT]:
     return a_star(start, neighbors_fn, process_fn, lambda _: 0, status)
 
 
@@ -18,7 +23,13 @@ class Node[STATE](NamedTuple):
         return (self.est, self.dist) < (other.est, other.dist)
 
 
-def a_star(start:STATE, neighbors_fn:Callable[[STATE], Iterable[tuple[int, STATE]]],  process_fn:Callable[[int, STATE], Optional[RESULT]], estimator_fn:Callable[[STATE], int], status:bool=False) -> Optional[RESULT]:
+def a_star(
+        start:STATE,
+        neighbors_fn:Callable[[STATE], Iterable[tuple[int, STATE]]],
+        process_fn:Callable[[int, STATE], Optional[RESULT]] = (lambda _, __: None),
+        estimator_fn:Callable[[STATE], int] = lambda _: 0,
+        status:bool=False
+) -> Optional[RESULT]:
     to_search = [Node(estimator_fn(start), 0, start)]
     heapq.heapify(to_search)
     seen = set()
