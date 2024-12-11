@@ -25,7 +25,7 @@ def process(stones):
             result[int(left)] += count
             result[int(right)] += count
         else:
-            result[num * 2024] = count
+            result[num * 2024] += count
     return result
 
 BLINKS = 25
