@@ -33,20 +33,6 @@ def coord_vector(start, dir):
         yield start
         start = coord_add(start, dir)
 
-ORTHO_DIRS = [
-    (0, 1),
-    (1, 0),
-    (0, -1),
-    (-1, 0),
-]
-
-DIAG_DIRS = [
-    (1, 1),
-    (-1, 1),
-    (-1, -1),
-    (1, -1),
-]
-
 class Coord2D(NamedTuple):
     x: int
     y: int
@@ -110,3 +96,17 @@ class Coord3D(NamedTuple):
 
     def __neg__(self):
         return Coord3D(-self.x, -self.y, -self.z)
+
+ORTHO_DIRS = [
+    Coord2D(0, 1),
+    Coord2D(1, 0),
+    Coord2D(0, -1),
+    Coord2D(-1, 0),
+]
+
+DIAG_DIRS = [
+    Coord2D(1, 1),
+    Coord2D(-1, 1),
+    Coord2D(-1, -1),
+    Coord2D(1, -1),
+]
