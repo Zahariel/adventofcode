@@ -1,4 +1,4 @@
-from breadth_first import ortho_neighbors, breadth_first
+from breadth_first import ortho_neighbors, flood_fill
 from utils import ORTHO_DIRS, Coord2D
 
 
@@ -22,14 +22,9 @@ regions = []
 
 while uncounted:
     root = uncounted.pop()
-    region = set()
-    def process(_, loc):
-        uncounted.discard(loc)
-        region.add(Coord2D(*loc))
-    def neighbors(loc):
-        return [(1, nbr) for (_, nbr) in RAW_NEIGHBORS(loc) if grid[loc] == grid[nbr]]
-    breadth_first(root, neighbors_fn=neighbors, process_fn=process)
-    regions.append((grid[root], region))
+    region = flood_fill(root, neighbors_fn=RAW_NEIGHBORS, include_fn=lambda loc:grid[loc] == grid[root])
+    uncounted -= region
+    regions.append((grid[root], {Coord2D(*point) for point in region}))
 
 def perimeter(region):
     return sum(1 for point in region for dir in ORTHO_DIRS if point + dir not in region)

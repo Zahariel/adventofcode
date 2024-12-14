@@ -76,3 +76,12 @@ def ortho_neighbors(*bounds:tuple[int, int], cost_fn:Callable[[COORD, COORD], Op
 
     return neighbors
 
+# it seems like I use this a lot so I'm turning it into a utility
+def flood_fill(start:STATE, neighbors_fn:Callable[[STATE], Iterable[tuple[int, STATE]]], include_fn:Callable[[STATE], bool]) -> set[STATE]:
+    result = set()
+    def real_neighbors(state):
+        return [(cost, nbr) for (cost, nbr) in neighbors_fn(state) if include_fn(nbr)]
+    def process(_, state):
+        result.add(state)
+    breadth_first(start, neighbors_fn=real_neighbors, process_fn=process)
+    return result
