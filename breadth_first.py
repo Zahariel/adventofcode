@@ -9,22 +9,25 @@ def breadth_first(
         start:STATE,
         neighbors_fn:Callable[[STATE], Iterable[tuple[int, STATE]]],
         process_fn:Callable[[int, STATE], Optional[RESULT]] = (lambda _, __: None),
+        revisit_fn:Callable[[int, STATE], None] = (lambda _, __: None),
         status:bool=False
 ) -> Optional[RESULT]:
-    return a_star([start], neighbors_fn, process_fn, lambda _: 0, status)
+    return a_star([start], neighbors_fn, lambda p, c, s: process_fn(c, s), lambda p, c, s: revisit_fn(c, s), lambda _: 0, status)
 
 def breadth_first_multiple_starts(
         starts:Iterable[STATE],
         neighbors_fn:Callable[[STATE], Iterable[tuple[int, STATE]]],
         process_fn:Callable[[int, STATE], Optional[RESULT]] = (lambda _, __: None),
+        revisit_fn:Callable[[int, STATE], None] = (lambda _, __: None),
         status:bool=False
 ) -> Optional[RESULT]:
-    return a_star(starts, neighbors_fn, process_fn, lambda _: 0, status)
+    return a_star(starts, neighbors_fn, lambda p, c, s: process_fn(c, s), lambda p, c, s: revisit_fn(c, s), lambda _: 0, status)
 
 class Node[STATE](NamedTuple):
     est: int
     dist: int
     state: STATE
+    prev: STATE
 
     def __lt__(self, other):
         return (self.est, self.dist) < (other.est, other.dist)
@@ -33,27 +36,29 @@ class Node[STATE](NamedTuple):
 def a_star(
         starts:Iterable[STATE],
         neighbors_fn:Callable[[STATE], Iterable[tuple[int, STATE]]],
-        process_fn:Callable[[int, STATE], Optional[RESULT]] = (lambda _, __: None),
+        process_fn:Callable[[STATE, int, STATE], Optional[RESULT]] = (lambda _, __: None),
+        revisit_fn:Callable[[STATE, int, STATE], None] = (lambda _, __: None),
         estimator_fn:Callable[[STATE], int] = lambda _: 0,
         status:bool=False
 ) -> Optional[RESULT]:
-    to_search = [Node(estimator_fn(start), 0, start) for start in starts]
+    to_search = [Node(estimator_fn(start), 0, start, None) for start in starts]
     heapq.heapify(to_search)
     seen = set()
     current_est = 0
     while len(to_search) > 0:
-        est, dist, state = heapq.heappop(to_search)
+        est, dist, state, prev = heapq.heappop(to_search)
         if status and est > current_est:
             print(dist, est)
             current_est = est
         if state in seen:
+            revisit_fn(prev, dist, state)
             continue
         seen.add(state)
-        result = process_fn(dist, state)
+        result = process_fn(prev, dist, state)
         if result is not None:
             return result
         for step, neighbor in neighbors_fn(state):
-            heapq.heappush(to_search, Node(dist + step + estimator_fn(neighbor), dist + step, neighbor))
+            heapq.heappush(to_search, Node(dist + step + estimator_fn(neighbor), dist + step, neighbor, state))
     return None
 
 
