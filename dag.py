@@ -72,6 +72,7 @@ class Dag[NODE]:
 
     @staticmethod
     def from_child_edges(edges: Iterable[Tuple[NODE, NODE]], all_nodes:Optional[Iterable[NODE]] = None):
+        edges = set(edges)
         if all_nodes is None:
             all_nodes = {*(l for l, r in edges), *(r for l, r in edges)}
         result = Dag(all_nodes)

@@ -1,6 +1,6 @@
 from breadth_first import breadth_first, a_star
 from dag import Dag
-from utils import Coord2D
+from utils import Coord2D, ORTHO_DIRS
 
 
 def parse(line):
@@ -62,6 +62,6 @@ def revisit(prev, cost, state):
 a_star([start_state], neighbors_fn=neighbors, process_fn=process2, revisit_fn=revisit)
 
 dag = Dag.from_children({node: apps for (node, (_, apps)) in approaches.items()})
-results = dag.propagate_values({(end, Coord2D(0, -1)): True}, combiner=any)
+results = dag.propagate_values({(end, dir): True for dir in ORTHO_DIRS}, combiner=any)
 
 print(len(set(loc for (loc, _), val in results.items() if val)))
