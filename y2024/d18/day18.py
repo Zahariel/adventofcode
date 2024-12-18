@@ -1,3 +1,5 @@
+import time
+
 from parsy import string
 
 from breadth_first import ortho_neighbors, breadth_first, a_star
@@ -39,7 +41,8 @@ print(result)
 
 
 # alternate part 2 solution, only recheck if the previous shortest path got clobbered
-# this is WAY faster
+# this is WAY faster, 560-580ms
+start = time.perf_counter()
 predecessor = dict()
 def process2(prev, cost, point):
     predecessor[point] = prev
@@ -65,3 +68,22 @@ for new_byte in bytes[1024:]:
     if result is None:
         print(f"{new_byte[0]},{new_byte[1]}")
         break
+soln_1 = time.perf_counter()
+
+# alternate part 2 solution 2, using binary search. 35-40ms, 15x faster than the previous solution!
+lo = 1024
+hi = len(bytes)
+while lo + 1 < hi:
+    mid = (lo + hi) // 2
+    active_bytes = set(bytes[:mid])
+    result = a_star([(0,0)], neighbors_fn=neighbors, process_fn=lambda _, c, p:process(c,p), estimator_fn=lambda p: manhattan(p, (SIZE-1, SIZE-1)))
+    if result is None:
+        hi = mid
+    else:
+        lo = mid
+
+fail_byte = bytes[lo]
+print(f"{fail_byte[0]},{fail_byte[1]}")
+
+soln_2 = time.perf_counter()
+print(soln_1 - start, soln_2 - soln_1)
