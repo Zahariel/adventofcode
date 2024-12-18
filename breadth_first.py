@@ -36,8 +36,8 @@ class Node[STATE](NamedTuple):
 def a_star(
         starts:Iterable[STATE],
         neighbors_fn:Callable[[STATE], Iterable[tuple[int, STATE]]],
-        process_fn:Callable[[STATE, int, STATE], Optional[RESULT]] = (lambda _, __: None),
-        revisit_fn:Callable[[STATE, int, STATE], None] = (lambda _, __: None),
+        process_fn:Callable[[STATE, int, STATE], Optional[RESULT]] = (lambda _, __, ___: None),
+        revisit_fn:Callable[[STATE, int, STATE], None] = (lambda _, __, ___: None),
         estimator_fn:Callable[[STATE], int] = lambda _: 0,
         status:bool=False
 ) -> Optional[RESULT]:
