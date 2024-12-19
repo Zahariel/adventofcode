@@ -1,4 +1,5 @@
 import functools
+from time import perf_counter
 
 from parsy import string, regex
 
@@ -12,6 +13,8 @@ def parse_patterns(line):
 with open("input.txt") as f:
     patterns, designs = split_on_blank(f)
     patterns = parse_patterns(patterns[0])
+
+start = perf_counter()
 
 pattern_trie = dict()
 for p in patterns:
@@ -36,8 +39,25 @@ def calc_design(design, ptr):
         trie_ptr = trie_ptr[design[here]]
     return result
 
-ways = [calc_design(d, 0) for d in designs]
 
+ways = [calc_design(d, 0) for d in designs]
 print(sum(1 for w in ways if w > 0))
 print(sum(ways))
 
+soln_1 = perf_counter()
+print(soln_1 - start)
+
+# a different solution that just uses a set. it's disappointing that this is 8x faster than the trie approach
+
+patterns = set(patterns)
+
+@functools.cache
+def calc_design2(design, ptr):
+    if ptr == len(design): return 1
+    return sum(calc_design(design, end) for end in range(ptr, len(design) + 1) if design[ptr:end] in patterns)
+
+ways = [calc_design2(d, 0) for d in designs]
+print(sum(1 for w in ways if w > 0))
+print(sum(ways))
+soln_2 = perf_counter()
+print(soln_2 - soln_1)
