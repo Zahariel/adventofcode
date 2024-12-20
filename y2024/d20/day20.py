@@ -18,7 +18,7 @@ end = find_and_replace_symbol(map, "E", ".")
 raw_neighbors = ortho_neighbors((0, len(lines[0])), (0, len(lines)))
 
 def neighbors(loc):
-    return [(cost, nbr) for cost, nbr in raw_neighbors(loc) if map[nbr] != "#"]
+    return [(cost, Coord2D(*nbr)) for cost, nbr in raw_neighbors(loc) if map[nbr] != "#"]
 
 from_start = dict()
 from_end = dict()
@@ -40,14 +40,14 @@ def check_cheat(enter, leave):
     if enter in from_start and leave in from_end:
         return base_cost - (from_start[enter] + from_end[leave] + manhattan(enter, leave))
 
+def find_savings(max_cheat):
+    savings = {(enter, enter + Coord2D(dx, dy)): check_cheat(enter, enter + Coord2D(dx, dy)) for enter in from_start for dx in range(-max_cheat, max_cheat+1) for dy in range(-(max_cheat - abs(dx)), (max_cheat - abs(dx))+1)}
+    return {coords: saved for coords, saved in savings.items() if saved is not None and saved > 0}
+
 # part 1
-MAX_CHEAT = 2
-small_savings = {(enter, enter + Coord2D(dx, dy)): check_cheat(enter, enter + Coord2D(dx, dy)) for enter in map for dx in range(-MAX_CHEAT, MAX_CHEAT+1) for dy in range(-(MAX_CHEAT - abs(dx)), (MAX_CHEAT - abs(dx))+1)}
-small_savings = {coords: saved for coords, saved in small_savings.items() if saved is not None}
+small_savings = find_savings(2)
 print(sum(1 for s in small_savings.values() if s >= 100))
 
 # part 2, this takes kind of a while
-MAX_CHEAT = 20
-big_savings = {(enter, enter + Coord2D(dx, dy)): check_cheat(enter, enter + Coord2D(dx, dy)) for enter in map for dx in range(-MAX_CHEAT, MAX_CHEAT+1) for dy in range(-(MAX_CHEAT - abs(dx)), (MAX_CHEAT - abs(dx))+1)}
-big_savings = {coords: saved for coords, saved in big_savings.items() if saved is not None and saved > 0}
+big_savings = find_savings(20)
 print(sum(1 for s in big_savings.values() if s >= 100))
