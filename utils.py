@@ -1,5 +1,7 @@
 import math
 import operator
+from typing import Dict
+
 from typing import NamedTuple, TypeVar
 
 
@@ -127,3 +129,11 @@ DIAG_DIRS = [
     Coord2D(-1, -1),
     Coord2D(1, -1),
 ]
+
+KEY = TypeVar("KEY")
+VALUE = TypeVar("VALUE")
+def find_and_replace_symbol(start: Dict[KEY, VALUE], symbol: VALUE, replacement: VALUE) -> KEY:
+    for loc, cell in start.items():
+        if cell == symbol:
+            start[loc] = replacement
+            return loc

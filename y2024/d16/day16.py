@@ -1,6 +1,6 @@
 from breadth_first import breadth_first, a_star
 from dag import Dag
-from utils import Coord2D, ORTHO_DIRS
+from utils import Coord2D, ORTHO_DIRS, find_and_replace_symbol
 
 
 def parse(line):
@@ -12,14 +12,8 @@ with open("input.txt") as f:
 
 map = {Coord2D(x, y): cell for y, line in enumerate(original_map) for x, cell in enumerate(line)}
 
-def find_symbol(symbol):
-    for loc, cell in map.items():
-        if cell == symbol:
-            map[loc] = "."
-            return loc
-
-start = find_symbol("S")
-end = find_symbol("E")
+start = find_and_replace_symbol(map, "S", ".")
+end = find_and_replace_symbol(map, "E", ".")
 
 # start facing east
 start_state = (start, Coord2D(1, 0))
