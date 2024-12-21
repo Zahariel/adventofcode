@@ -86,65 +86,72 @@ def numerical_robot(output):
         results = [result + "A" for result in results]
     return results
 
-raw_best_paths = {
-    ("A", "A"): "A",
-    ("A", "^"): "<A",
-    ("A", "<"): "v<<A",
-    ("A", ">"): "vA",
-    ("A", "v"): "<vA",
-    ("^", "A"): ">A",
-    ("^", "^"): "A",
-    ("^", "<"): "v<A",
-    ("^", ">"): "v>A",
-    ("^", "v"): "vA",
-    ("<", "A"): ">>^A",
-    ("<", "^"): ">^A",
-    ("<", "<"): "A",
-    ("<", ">"): ">>A",
-    ("<", "v"): ">A",
-    (">", "A"): "^A",
-    (">", "^"): "<^A",
-    (">", "<"): "<<A",
-    (">", ">"): "A",
-    (">", "v"): "<A",
-    ("v", "A"): ">^A",
-    ("v", "^"): "^A",
-    ("v", "<"): "<A",
-    ("v", ">"): ">A",
-    ("v", "v"): "A",
+raw_paths = {
+    ("A", "A"): ["A"],
+    ("A", "^"): ["<A"],
+    ("A", "<"): ["v<<A"],
+    ("A", ">"): ["vA"],
+    ("A", "v"): ["<vA", "v<A"],
+    ("^", "A"): [">A"],
+    ("^", "^"): ["A"],
+    ("^", "<"): ["v<A"],
+    ("^", ">"): ["v>A", ">vA"],
+    ("^", "v"): ["vA"],
+    ("<", "A"): [">>^A"],
+    ("<", "^"): [">^A"],
+    ("<", "<"): ["A"],
+    ("<", ">"): [">>A"],
+    ("<", "v"): [">A"],
+    (">", "A"): ["^A"],
+    (">", "^"): ["<^A", "^<A"],
+    (">", "<"): ["<<A"],
+    (">", ">"): ["A"],
+    (">", "v"): ["<A"],
+    ("v", "A"): [">^A", "^>A"],
+    ("v", "^"): ["^A"],
+    ("v", "<"): ["<A"],
+    ("v", ">"): [">A"],
+    ("v", "v"): ["A"],
 }
 
-best_paths = {trans: (path[0], Counter(itertools.pairwise(path))) for trans, path in raw_best_paths.items()}
+path_maps = {trans: [(path[0], Counter(itertools.pairwise(path))) for path in paths] for trans, paths in raw_paths.items()}
 
 def input_for_output(start, output_map):
-    input_map = Counter()
-    first_input, first_path = best_paths["A", start]
-    input_map.update(first_path)
+    first_paths = path_maps["A", start]
+    possibilities = [(start, Counter(moves)) for start, moves in first_paths]
     for output_trans, count in output_map.items():
-        first, moves = best_paths[output_trans]
-        input_map["A", first] += count
-        for input_trans, amt in moves.items():
-            input_map[input_trans] += amt * count
-    return first_input, input_map
+        next_possibilities = []
+        for output_start, output_moves in path_maps[output_trans]:
+            for start, moves in possibilities:
+                updated:Counter[tuple[str, str]] = Counter(moves)
+                updated["A", output_start] += count
+                for input_trans, amt in output_moves.items():
+                    updated[input_trans] += amt * count
+                next_possibilities.append((start, updated))
+        possibilities = next_possibilities
+    return possibilities
 
 def find_best(output, robots):
     raw_numerical_moves = numerical_robot(output)
     possibilities = [(seq[0], Counter(itertools.pairwise(seq))) for seq in raw_numerical_moves]
     for i in range(robots - 1):
-        possibilities = [input_for_output(*p) for p in possibilities]
+        # print(i, len(possibilities))
+        possibilities = [next_p for p in possibilities for next_p in input_for_output(*p)]
+        # now for some pruning; assume that any non-shortest intermediate sequence is not worth pursuing further
+        min_size = min(sum(moves.values()) for _, moves in possibilities)
+        possibilities = [(start, moves) for start, moves in possibilities if sum(moves.values()) == min_size]
     return min(sum(moves.values()) + 1 for _, moves in possibilities)
 
 def complexity(output, robots):
     min_input = find_best(output, robots)
-    print(output, min_input)
+    print(output, min_input) # i'm leaving this in because otherwise part 2 just takes a couple minutes with no feedback
     numeric_part = int(output[:-1])
     return min_input * numeric_part
 
-# this works for part 1 but not part 2 and i'm not sure why, i assume it has to do with the shortcuts inherent in
-# raw_best_paths but i'm not sure how to fix that without a really big exponential explosion
-
 print(sum(complexity(output, 3) for output in lines))
 
+# this works but takes QUITE A WHILE and sometimes crashes for no reason
+# i think something in my computer is slightly corrupt because other big data puzzles sometimes crash too
+# but there must be a better way to prune this
 print(sum(complexity(output, 26) for output in lines))
-
 
