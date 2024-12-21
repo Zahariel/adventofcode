@@ -37,27 +37,6 @@ numeric_keypad = {
 }
 
 
-#     +---+---+
-#     | ^ | A |
-# +---+---+---+
-# | < | v | > |
-# +---+---+---+
-
-directional_keypad = {
-    "^": Coord2D(1, 0),
-    "A": Coord2D(2, 0),
-    "<": Coord2D(0, 1),
-    "v": Coord2D(1, 1),
-    ">": Coord2D(2, 1),
-}
-
-MOVE_BUTTONS = {
-    Coord2D(0, 1): "v",
-    Coord2D(-1, 0): "<",
-    Coord2D(0, -1): "^",
-    Coord2D(1, 0): ">",
-}
-
 def horiz_moves(current, target):
     if current.x < target.x:
         return ">" * (target.x - current.x)
@@ -86,6 +65,13 @@ def numerical_robot(output):
         results = [result + "A" for result in results]
     return results
 
+#     +---+---+
+#     | ^ | A |
+# +---+---+---+
+# | < | v | > |
+# +---+---+---+
+# it's easier to just make a list of all reasonable paths from point to point on this grid
+# for the handful that have multiple choices, I could NOT find a heuristic to guess which would generally be better
 raw_paths = {
     ("A", "A"): ["A"],
     ("A", "^"): ["<A"],
