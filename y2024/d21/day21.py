@@ -73,60 +73,58 @@ def numerical_robot(output):
 # it's easier to just make a list of all reasonable paths from point to point on this grid
 # for the handful that have multiple choices, I could NOT find a heuristic to guess which would generally be better
 raw_paths = {
-    ("A", "A"): ["A"],
-    ("A", "^"): ["<A"],
-    ("A", "<"): ["v<<A"],
-    ("A", ">"): ["vA"],
-    ("A", "v"): ["<vA", "v<A"],
-    ("^", "A"): [">A"],
-    ("^", "^"): ["A"],
-    ("^", "<"): ["v<A"],
-    ("^", ">"): ["v>A", ">vA"],
-    ("^", "v"): ["vA"],
-    ("<", "A"): [">>^A"],
-    ("<", "^"): [">^A"],
-    ("<", "<"): ["A"],
-    ("<", ">"): [">>A"],
-    ("<", "v"): [">A"],
-    (">", "A"): ["^A"],
-    (">", "^"): ["<^A", "^<A"],
-    (">", "<"): ["<<A"],
-    (">", ">"): ["A"],
-    (">", "v"): ["<A"],
-    ("v", "A"): [">^A", "^>A"],
-    ("v", "^"): ["^A"],
-    ("v", "<"): ["<A"],
-    ("v", ">"): [">A"],
-    ("v", "v"): ["A"],
+    ("A", "A"): [""],
+    ("A", "^"): ["<"],
+    ("A", "<"): ["v<<"],
+    ("A", ">"): ["v"],
+    ("A", "v"): ["<v", "v<"],
+    ("^", "A"): [">"],
+    ("^", "^"): [""],
+    ("^", "<"): ["v<"],
+    ("^", ">"): ["v>", ">v"],
+    ("^", "v"): ["v"],
+    ("<", "A"): [">>^"],
+    ("<", "^"): [">^"],
+    ("<", "<"): [""],
+    ("<", ">"): [">>"],
+    ("<", "v"): [">"],
+    (">", "A"): ["^"],
+    (">", "^"): ["<^", "^<"],
+    (">", "<"): ["<<"],
+    (">", ">"): [""],
+    (">", "v"): ["<"],
+    ("v", "A"): [">^", "^>"],
+    ("v", "^"): ["^"],
+    ("v", "<"): ["<"],
+    ("v", ">"): [">"],
+    ("v", "v"): [""],
 }
 
-path_maps = {trans: [(path[0], Counter(itertools.pairwise(path))) for path in paths] for trans, paths in raw_paths.items()}
+path_maps = {trans: [Counter(itertools.pairwise("A" + path + "A")) for path in paths] for trans, paths in raw_paths.items()}
 
-def input_for_output(start, output_map):
-    first_paths = path_maps["A", start]
-    possibilities = [(start, Counter(moves)) for start, moves in first_paths]
+def input_for_output(output_map):
+    possibilities = [Counter()]
     for output_trans, count in output_map.items():
         next_possibilities = []
-        for output_start, output_moves in path_maps[output_trans]:
-            for start, moves in possibilities:
+        for output_moves in path_maps[output_trans]:
+            for moves in possibilities:
                 updated:Counter[tuple[str, str]] = Counter(moves)
-                updated["A", output_start] += count
                 for input_trans, amt in output_moves.items():
                     updated[input_trans] += amt * count
-                next_possibilities.append((start, updated))
+                next_possibilities.append(updated)
         possibilities = next_possibilities
     return possibilities
 
 def find_best(output, robots):
     raw_numerical_moves = numerical_robot(output)
-    possibilities = [(seq[0], Counter(itertools.pairwise(seq))) for seq in raw_numerical_moves]
+    possibilities = [Counter(itertools.pairwise("A" + seq)) for seq in raw_numerical_moves]
     for i in range(robots - 1):
         # print(i, len(possibilities))
-        possibilities = [next_p for p in possibilities for next_p in input_for_output(*p)]
+        possibilities = [next_p for p in possibilities for next_p in input_for_output(p)]
         # now for some pruning; assume that any non-shortest intermediate sequence is not worth pursuing further
-        min_size = min(sum(moves.values()) for _, moves in possibilities)
-        possibilities = [(start, moves) for start, moves in possibilities if sum(moves.values()) == min_size]
-    return min(sum(moves.values()) + 1 for _, moves in possibilities)
+        min_size = min(sum(moves.values()) for moves in possibilities)
+        possibilities = [moves for moves in possibilities if sum(moves.values()) == min_size]
+    return min(sum(moves.values()) for moves in possibilities)
 
 def complexity(output, robots):
     min_input = find_best(output, robots)

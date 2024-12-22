@@ -25,3 +25,4 @@ out/
 # AoC input files
 **/input*.txt
 **/test*.txt
+**/scratch.txt
