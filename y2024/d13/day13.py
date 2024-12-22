@@ -1,7 +1,8 @@
 from parsy import seq, string
 
+from coord_utils import Coord2D
+from math_utils import solve_diophantine
 from parsing import number, split_on_blank
-from utils import Coord2D, solve_diophantine
 
 machines = []
 

@@ -1,7 +1,7 @@
 import functools
 import itertools
 
-from utils import Coord2D
+from coord_utils import Coord2D
 
 
 def parse(line):

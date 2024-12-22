@@ -3,8 +3,8 @@ import time
 from parsy import string
 
 from breadth_first import ortho_neighbors, breadth_first, a_star
+from coord_utils import manhattan
 from parsing import number
-from utils import manhattan
 
 
 def parse(line):

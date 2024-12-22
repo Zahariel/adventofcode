@@ -1,6 +1,6 @@
 import operator
 
-from utils import in_bounds
+from coord_utils import in_bounds
 
 NORTH = (-1, 0)
 EAST = (0, 1)

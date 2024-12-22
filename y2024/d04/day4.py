@@ -1,4 +1,4 @@
-from utils import in_bounds, coord_vector, DIAG_DIRS, ORTHO_DIRS
+from coord_utils import in_bounds, coord_vector, DIAG_DIRS, ORTHO_DIRS
 
 with open("input.txt") as f:
     lines = [line.rstrip() for line in f]

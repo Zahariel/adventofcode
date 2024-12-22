@@ -1,8 +1,8 @@
 from parsy import seq, string
 
 from breadth_first import ortho_neighbors, flood_fill
+from coord_utils import Coord2D
 from parsing import number
-from utils import Coord2D
 
 
 def parse(line):

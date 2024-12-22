@@ -1,5 +1,5 @@
+from coord_utils import Coord2D
 from parsing import split_on_blank
-from utils import Coord2D
 
 MOVES = {
     "^": Coord2D(-1, 0),

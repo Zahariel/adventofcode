@@ -2,7 +2,7 @@ import math
 from collections import defaultdict
 from itertools import combinations
 
-from utils import in_bounds, Coord2D
+from coord_utils import in_bounds, Coord2D
 
 
 def parse(line):

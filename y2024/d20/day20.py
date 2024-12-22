@@ -1,5 +1,6 @@
 from breadth_first import ortho_neighbors, breadth_first
-from utils import Coord2D, manhattan, find_and_replace_symbol
+from collection_utils import find_and_replace_symbol
+from coord_utils import Coord2D, manhattan
 
 
 def parse(line):

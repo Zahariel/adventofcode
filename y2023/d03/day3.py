@@ -1,4 +1,4 @@
-from utils import in_bounds
+from coord_utils import in_bounds
 
 def parse(line):
     return [c for c in line]

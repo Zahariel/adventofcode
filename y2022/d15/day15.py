@@ -1,7 +1,9 @@
 import re
+
 import portion
 
-from utils import manhattan
+from coord_utils import manhattan
+
 
 class Sensor():
     def __init__(self, s_x, s_y, b_x, b_y):

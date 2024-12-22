@@ -4,8 +4,8 @@ import math
 import z3
 from parsy import seq, string, whitespace
 
+from coord_utils import Coord3D
 from parsing import number
-from utils import Coord3D
 
 INPUT_FILE = "input.txt"
 TEST_MIN = 200000000000000

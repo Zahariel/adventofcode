@@ -1,7 +1,7 @@
 import operator
 from functools import reduce
 
-from utils import manhattan
+from coord_utils import manhattan
 
 with open("input.txt") as file:
     raw_map = {r: {c for c, cell in enumerate(line) if cell == '#'} for r, line in enumerate(file)}

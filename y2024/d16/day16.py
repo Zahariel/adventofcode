@@ -1,6 +1,7 @@
 from breadth_first import breadth_first, a_star
+from collection_utils import find_and_replace_symbol
+from coord_utils import Coord2D, ORTHO_DIRS
 from dag import Dag
-from utils import Coord2D, ORTHO_DIRS, find_and_replace_symbol
 
 
 def parse(line):

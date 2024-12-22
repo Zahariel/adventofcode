@@ -1,6 +1,8 @@
 import itertools
 from collections import Counter
 
+from collection_utils import n_wise
+
 
 def parse(line):
     return int(line)
@@ -39,13 +41,10 @@ all_prices = [calc_prices(secret) for secret in lines]
 
 def construct_results(price_list):
     answer = Counter()
-    history = []
-    for last, current in itertools.pairwise(price_list):
-        if len(history) == 4:
-            history.pop(0)
-        history.append(current - last)
-        if len(history) == 4 and tuple(history) not in answer:
-            answer[tuple(history)] = current
+    for history in n_wise(price_list, 5):
+        diffs = tuple(b - a for a, b in itertools.pairwise(history))
+        if diffs not in answer:
+            answer[diffs] = history[-1]
     return answer
 
 final_results = Counter()

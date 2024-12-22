@@ -2,8 +2,9 @@ import math
 
 from parsy import regex, seq, string
 
+from math_utils import chinese_remainder
 from parsing import split_on_blank
-from utils import chinese_remainder
+
 
 def parse(line):
     node = regex(r"...")

@@ -1,7 +1,8 @@
 from collections import defaultdict
 from functools import cache
 
-from utils import coord_add, in_bounds
+from coord_utils import coord_add, in_bounds
+
 
 def parse(line):
     return [c for c in line]

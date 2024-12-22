@@ -1,4 +1,4 @@
-from utils import in_bounds
+from coord_utils import in_bounds
 
 CYCLE_COUNT = 1000000000
 

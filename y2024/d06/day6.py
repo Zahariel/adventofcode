@@ -1,4 +1,4 @@
-from utils import in_bounds, coord_add
+from coord_utils import in_bounds, coord_add
 
 
 def parse(line):

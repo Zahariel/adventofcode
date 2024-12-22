@@ -1,5 +1,5 @@
 from breadth_first import ortho_neighbors, flood_fill
-from utils import ORTHO_DIRS, Coord2D
+from coord_utils import ORTHO_DIRS, Coord2D
 
 
 def parse(line):
