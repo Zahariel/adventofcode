@@ -41,6 +41,9 @@ class Dag[NODE]:
                     heapq.heappush(to_process, Node(child))
 
     def propagate_values(self, initial:Mapping[NODE, RESULT], combiner:Callable[[Iterable[RESULT]], RESULT]) -> Mapping[NODE, RESULT]:
+        return self.propagate_named_values(initial, lambda _, vs: combiner(vs))
+
+    def propagate_named_values(self, initial:Mapping[NODE, RESULT], combiner:Callable[[NODE, Iterable[RESULT]], RESULT]):
         result = dict(initial)
         to_process = deque(self.nodes)
         while to_process:
@@ -48,9 +51,10 @@ class Dag[NODE]:
             if node in result: continue
             parents = self.parents[node]
             if parents <= result.keys():
-                result[node] = combiner(result[p] for p in parents)
+                result[node] = combiner(node, (result[p] for p in parents))
                 to_process.extend(self.children[node])
         return result
+
 
     @staticmethod
     def from_parents(parents: Mapping[NODE, Iterable[NODE]], all_nodes:Optional[Iterable[NODE]] = None):
