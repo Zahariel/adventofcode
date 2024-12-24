@@ -1,5 +1,6 @@
 import itertools
 from collections import Counter
+from time import perf_counter
 
 from collection_utils import n_wise
 
@@ -29,6 +30,8 @@ print(sum(full_evolve(secret, 2000) for secret in lines))
 
 # part 2
 
+start = perf_counter()
+
 def calc_prices(secret):
     def iterator(secret):
         yield secret % 10
@@ -38,6 +41,8 @@ def calc_prices(secret):
     return list(iterator(secret))
 
 all_prices = [calc_prices(secret) for secret in lines]
+
+prices_calced = perf_counter()
 
 def construct_results(price_list):
     answer = Counter()
@@ -51,4 +56,9 @@ final_results = Counter()
 for prices in all_prices:
     final_results.update(construct_results(prices))
 
+prices_combined = perf_counter()
+
 print(max(final_results.values()))
+
+end = perf_counter()
+print(end-start, prices_calced - start, prices_combined - prices_calced, end - prices_combined)
