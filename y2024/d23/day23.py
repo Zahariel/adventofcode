@@ -37,7 +37,7 @@ print(sum(1 for triad in triads if any(n[0] == "t" for n in triad)))
 
 # part 2
 
-def expand(cliques:set[frozenset[string]]):
+def expand(cliques:set[frozenset[str]]):
     result = set()
     for clique in cliques:
         candidates = functools.reduce(operator.and_, (connections[n] for n in clique))

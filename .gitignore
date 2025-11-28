@@ -19,6 +19,8 @@
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 
+.venv/
+
 # IntelliJ
 out/
 
