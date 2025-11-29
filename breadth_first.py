@@ -31,7 +31,15 @@ def a_star(
         estimator_fn:Callable[[STATE], int] = lambda _: 0,
         status:bool=False
 ) -> Optional[RESULT]:
-    return a_star_with_history(starts, neighbors_fn, lambda h, c, s: process_fn(h[-1], c, s), lambda h, c, s: revisit_fn(h[-1], c, s), estimator_fn, status)
+    result = a_star_with_history(
+        starts,
+        neighbors_fn,
+        lambda h, c, s: process_fn(h[-1], c, s),
+        lambda h, c, s: revisit_fn(h[-1], c, s),
+        estimator_fn,
+        status
+    )
+    return result[0] if result else None
 
 class Node[STATE](NamedTuple):
     est: int

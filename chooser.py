@@ -9,7 +9,7 @@ def choose_list(sets:Iterable[Iterable[VALUE]]) -> list[VALUE]:
     return [decisions_dict[i] for i in range(len(decisions_dict))]
 
 def choose_dict(sets:dict[KEY, Iterable[VALUE]]) -> dict[KEY, VALUE]:
-    decisions = {key: None for key in sets}
+    decisions: dict[KEY, VALUE | None] = {key: None for key in sets}
     possibilities = {key: set(val) for key, val in sets.items()}
     while any(val is None for val in decisions.values()):
         # find something with 1 possibility
@@ -17,5 +17,6 @@ def choose_dict(sets:dict[KEY, Iterable[VALUE]]) -> dict[KEY, VALUE]:
         val = s.pop()
         decisions[idx] = val
         # take that possibility out of everything
-        [poss.discard(val) for poss in possibilities.values()]
-    return decisions
+        for poss in possibilities.values():
+            poss.discard(val)
+    return {k: v for k, v in decisions.items() if v is not None}

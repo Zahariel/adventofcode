@@ -1,7 +1,7 @@
 import heapq
 import itertools
 from collections import defaultdict, deque
-from typing import Mapping, Optional, Tuple, MutableMapping, MutableSet, TypeVar, Iterable, Callable, NamedTuple
+from typing import Mapping, Optional, Tuple, MutableMapping, TypeVar, Iterable, Callable, NamedTuple
 
 NODE = TypeVar("NODE")
 RESULT = TypeVar("RESULT")
@@ -9,7 +9,7 @@ RESULT = TypeVar("RESULT")
 def _get_all_nodes(source:Mapping[NODE, Iterable[NODE]]):
     return {*source.keys(), *itertools.chain(*source.values())}
 
-def _invert_map(source:Mapping[NODE, Iterable[NODE]], target: MutableMapping[NODE, MutableSet[NODE]]):
+def _invert_map(source:Mapping[NODE, Iterable[NODE]], target: MutableMapping[NODE, set[NODE]]):
     for left, rights in source.items():
         for r in rights:
             target[r].add(left)
@@ -18,18 +18,18 @@ class Dag[NODE]:
 
     def __init__(self, nodes: Iterable[NODE]):
         self.nodes = set(nodes)
-        self.children = defaultdict(set)
-        self.parents = defaultdict(set)
+        self.children:defaultdict[NODE, set[NODE]] = defaultdict(set)
+        self.parents:defaultdict[NODE, set[NODE]] = defaultdict(set)
 
     def topological_sort(self, tiebreaker_fn:Callable[[NODE, NODE], bool] = lambda _, __: False) -> Iterable[NODE]:
-        class Node[NODE](NamedTuple):
+        class Node(NamedTuple):
             val: NODE
             def __lt__(self, other):
                 return tiebreaker_fn(self.val, other.val)
 
         to_process = [Node(node) for node in self.nodes]
         heapq.heapify(to_process)
-        processed = set()
+        processed:set[NODE] = set()
         while to_process:
             node = heapq.heappop(to_process).val
             if node in processed: continue
@@ -61,7 +61,8 @@ class Dag[NODE]:
         if all_nodes is None:
             all_nodes = _get_all_nodes(parents)
         result = Dag(all_nodes)
-        result.parents.update(parents)
+        for c, ps in parents.items():
+            result.parents[c].update(ps)
         _invert_map(parents, result.children)
         return result
 
@@ -70,7 +71,8 @@ class Dag[NODE]:
         if all_nodes is None:
             all_nodes = _get_all_nodes(children)
         result = Dag(all_nodes)
-        result.children.update(children)
+        for p, cs in children.items():
+            result.children[p].update(cs)
         _invert_map(children, result.parents)
         return result
 
@@ -78,7 +80,7 @@ class Dag[NODE]:
     def from_child_edges(edges: Iterable[Tuple[NODE, NODE]], all_nodes:Optional[Iterable[NODE]] = None):
         edges = set(edges)
         if all_nodes is None:
-            all_nodes = {*(l for l, r in edges), *(r for l, r in edges)}
+            all_nodes = {*itertools.chain(*edges)}
         result = Dag(all_nodes)
         for l, r in edges:
             result.children[l].add(r)

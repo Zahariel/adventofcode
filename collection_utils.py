@@ -9,6 +9,7 @@ def find_and_replace_symbol(start: Dict[KEY, VALUE], symbol: VALUE, replacement:
         if cell == symbol:
             start[loc] = replacement
             return loc
+    raise ValueError
 
 def n_wise(coll: Iterable[VALUE], group_size:int) -> Iterable[tuple[VALUE, ...]]:
     """like itertools.pairwise() but can return tuples of any given size"""
