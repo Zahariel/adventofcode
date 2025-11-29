@@ -5,6 +5,7 @@ class Planet:
         self.name = name
         self.children = []
         self.parent = None
+        self.depth = 0
 
 all_planets = KeyedDefaultdict(Planet)
 
@@ -28,7 +29,7 @@ resolve_depths(star, 0)
 print(sum(planet.depth for planet in all_planets.values()))
 
 def calc_parents(thing):
-    if thing == None: return []
+    if thing is None: return []
     return calc_parents(thing.parent) + [thing.name]
 
 my_parents = calc_parents(all_planets["YOU"])
