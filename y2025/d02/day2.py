@@ -32,3 +32,11 @@ def validate_id2(id):
     return True
 
 print(sum(id for left, right in ranges for id in range(left, right+1) if not validate_id2(id)))
+
+# bonus totally cheating solution inspired by david
+import re
+
+part_1 = re.compile(r"(\d+)\1")
+print(sum(id for left, right in ranges for id in range(left, right+1) if part_1.fullmatch(str(id))))
+part_2 = re.compile(r"(\d+)\1+")
+print(sum(id for left, right in ranges for id in range(left, right+1) if part_2.fullmatch(str(id))))
