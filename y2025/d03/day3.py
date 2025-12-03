@@ -17,7 +17,7 @@ def joltage_n(line, places):
     value = 0
     idx = 0
     for place in range(places-1, -1, -1):
-        digit, neg_new_idx = max((batt, -(idx+i)) for i, batt in enumerate(line[idx:len(line)-place]))
+        digit, neg_new_idx = max((batt, -i) for i, batt in enumerate(line[idx:len(line)-place], start=idx))
         value = value * 10 + digit
         idx = -neg_new_idx + 1
     return value
