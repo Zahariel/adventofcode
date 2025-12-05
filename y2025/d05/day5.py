@@ -1,6 +1,3 @@
-import operator
-from functools import reduce
-
 import portion as P
 from parsy import seq, string
 
@@ -16,11 +13,8 @@ with open("input.txt") as f:
     ranges = [parse_range(line.rstrip()) for line in ranges]
     available = [int(line) for line in available]
 
-print(ranges)
-print(available)
-
-fresh = reduce(operator.or_, (P.closed(left, right) for left, right in ranges))
+fresh = P.Interval(*(P.closedopen(left, right + 1) for left, right in ranges))
 
 print(sum(1 for ing in available if ing in fresh))
 
-print(sum(atom.upper - atom.lower + 1 for atom in fresh))
+print(sum(atom.upper - atom.lower for atom in fresh))
