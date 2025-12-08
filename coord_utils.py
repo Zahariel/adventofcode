@@ -1,4 +1,5 @@
 import operator
+from math import sqrt
 
 from typing import NamedTuple, TypeVar
 
@@ -66,6 +67,10 @@ class Coord3D(NamedTuple):
             yield start
             start = start + dir
 
+
+    @property
+    def magnitude(self):
+        return sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
 
     def __add__(self, other):
         return Coord3D(self.x + other.x, self.y + other.y, self.z + other.z)
