@@ -35,6 +35,14 @@ class Coord2D(NamedTuple):
             yield start
             start = start + dir
 
+    @property
+    def magnitude(self):
+        return sqrt(self.x * self.x + self.y * self.y)
+
+    @property
+    def manhattan(self):
+        return abs(self.x) + abs(self.y)
+
     def __add__(self, other):
         return Coord2D(self.x + other.x, self.y + other.y)
 
