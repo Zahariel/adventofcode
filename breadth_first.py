@@ -26,26 +26,32 @@ def breadth_first_multiple_starts(
 def a_star(
         starts:Iterable[STATE],
         neighbors_fn:Callable[[STATE], Iterable[tuple[int, STATE]]],
-        process_fn:Callable[[STATE, int, STATE], Optional[RESULT]] = (lambda _, __, ___: None),
-        revisit_fn:Callable[[STATE, int, STATE], None] = (lambda _, __, ___: None),
+        process_fn:Callable[[Optional[STATE], int, STATE], Optional[RESULT]] = (lambda _, __, ___: None),
+        revisit_fn:Callable[[Optional[STATE], int, STATE], None] = (lambda _, __, ___: None),
         estimator_fn:Callable[[STATE], int] = lambda _: 0,
         status:bool=False
 ) -> Optional[RESULT]:
     result = a_star_with_history(
         starts,
         neighbors_fn,
-        lambda h, c, s: process_fn(h[-1], c, s),
-        lambda h, c, s: revisit_fn(h[-1], c, s),
+        lambda h, c, s: process_fn(h.state if h else None, c, s),
+        lambda h, c, s: revisit_fn(h.state if h else None, c, s),
         estimator_fn,
         status
     )
     return result[0] if result else None
 
+
+class History[STATE](NamedTuple):
+    state: STATE
+    prev: Optional['History[STATE]']
+
+
 class Node[STATE](NamedTuple):
     est: int
     dist: int
     state: STATE
-    history: list[STATE]
+    history: Optional[History[STATE]]
 
     def __lt__(self, other):
         return (self.est, self.dist) < (other.est, other.dist)
@@ -54,12 +60,12 @@ class Node[STATE](NamedTuple):
 def a_star_with_history(
         starts:Iterable[STATE],
         neighbors_fn:Callable[[STATE], Iterable[tuple[int, STATE]]],
-        process_fn:Callable[[list[STATE], int, STATE], Optional[RESULT]] = (lambda _, __, ___: None),
-        revisit_fn:Callable[[list[STATE], int, STATE], None] = (lambda _, __, ___: None),
+        process_fn:Callable[[Optional[History[STATE]], int, STATE], Optional[RESULT]] = (lambda _, __, ___: None),
+        revisit_fn:Callable[[Optional[History[STATE]], int, STATE], None] = (lambda _, __, ___: None),
         estimator_fn:Callable[[STATE], int] = lambda _: 0,
-        status:bool=False
-) -> Optional[tuple[RESULT, list[STATE]]]:
-    to_search = [Node(estimator_fn(start), 0, start, [None]) for start in starts]
+        status:bool=False,
+) -> Optional[tuple[RESULT, History[STATE]]]:
+    to_search = [Node(estimator_fn(start), 0, start, None) for start in starts]
     heapq.heapify(to_search)
     seen = set()
     current_est = 0
@@ -73,9 +79,9 @@ def a_star_with_history(
             continue
         seen.add(state)
         result = process_fn(history, dist, state)
-        new_history = history + [state]
+        new_history = History(state, history)
         if result is not None:
-            return result, new_history[1:]
+            return result, new_history
         for step, neighbor in neighbors_fn(state):
             heapq.heappush(to_search, Node(dist + step + estimator_fn(neighbor), dist + step, neighbor, new_history))
     return None
