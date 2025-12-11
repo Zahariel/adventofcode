@@ -1,6 +1,6 @@
 import heapq
 import itertools
-from collections import defaultdict, deque
+from collections import defaultdict
 from typing import Mapping, Optional, Tuple, MutableMapping, TypeVar, Iterable, Callable, NamedTuple
 
 NODE = TypeVar("NODE")
@@ -43,16 +43,29 @@ class Dag[NODE]:
     def propagate_values(self, initial:Mapping[NODE, RESULT], combiner:Callable[[Iterable[RESULT]], RESULT]) -> Mapping[NODE, RESULT]:
         return self.propagate_named_values(initial, lambda _, vs: combiner(vs))
 
-    def propagate_named_values(self, initial:Mapping[NODE, RESULT], combiner:Callable[[NODE, Iterable[RESULT]], RESULT]):
+    def propagate_named_values(
+        self,
+        initial: Mapping[NODE, RESULT],
+        combiner: Callable[[NODE, Iterable[RESULT]], RESULT],
+    ) -> Mapping[NODE, RESULT]:
+        """
+        Propagates an initial set of seed values through the DAG with the given combiner function.
+
+        :param initial: Initial seed values
+        :param combiner: Combiner function that takes the node name and values from all parents. Note: this needs
+        to return a sensible default if there are no parents, so the input values are empty
+        :return: Map of all node names to computed values
+        """
         result = dict(initial)
-        to_process = deque(self.nodes)
+        to_process = set(self.nodes)
         while to_process:
-            node = to_process.popleft()
+            node = to_process.pop()
+            # i think this is only possible if node was in the initial seed
             if node in result: continue
             parents = self.parents[node]
             if parents <= result.keys():
-                result[node] = combiner(node, (result[p] for p in parents))
-                to_process.extend(self.children[node])
+                result[node] = combiner(node, [result[p] for p in parents])
+                to_process.update(self.children[node])
         return result
 
 
