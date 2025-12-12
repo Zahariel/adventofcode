@@ -16,7 +16,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "mypy", specifier = ">=1.11" },
+    { name = "mypy", specifier = ">=1.14" },
     { name = "parsy", specifier = "~=2.1" },
     { name = "parsy-stubs", specifier = ">=2.1.2" },
     { name = "portion", specifier = "~=2.4.1" },
