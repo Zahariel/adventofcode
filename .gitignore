@@ -18,6 +18,9 @@
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
+.idea/db-forest-config.xml
+.idea/data_source_mapping.xml
+.idea/queries/
 
 .venv/
 
